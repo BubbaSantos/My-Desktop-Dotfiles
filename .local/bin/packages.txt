@@ -75,6 +75,7 @@ fzf
 ghostty
 gimp
 git
+git-filter-repo
 github-cli
 gnome-calculator
 gnome-disk-utility
