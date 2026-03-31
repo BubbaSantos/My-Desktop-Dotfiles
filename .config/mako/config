@@ -1,1 +1,43 @@
-/home/bubba/.config/omarchy/current/theme/mako.ini
+# Font and text
+font=JetBrains Mono 11
+markup=1
+format=<span font="14" weight="bold">%s</span>\n<span font="11">%b</span>
+text-color=#ffffff
+
+# Background and borders
+background-color=#1a1a1aee
+border-color=#7cada1
+border-size=2
+border-radius=12
+
+# Padding and margins
+padding=6,10
+margin=8
+
+# Position and size
+anchor=top-center
+layer=overlay
+outer-margin=0
+width=400
+height=120
+
+# Notification timing
+default-timeout=4000
+ignore-timeout=0
+
+# Grouping behavior
+group-by=app-name
+max-visible=3
+
+# Progress bars
+progress-color=#7ccf94
+
+[urgency=critical]
+border-color=#ff6b6b
+text-color=#ff6b6b
+default-timeout=0
+
+[app-name=teams]
+border-color=#7ccf94
+text-color=#ffffff
+default-timeout=4000
