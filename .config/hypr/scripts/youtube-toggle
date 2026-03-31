@@ -1,0 +1,12 @@
+#!/bin/bash
+# YouTube Toggle - Open or focus YouTube web app
+# Check if YouTube window exists
+if hyprctl clients -j | jq -e '.[] | select(.class == "chrome-www.youtube.com__-Profile_1")' > /dev/null 2>&1; then
+    # Get the window address (already has 0x prefix)
+    WINDOW_ADDRESS=$(hyprctl clients -j | jq -r '.[] | select(.class == "chrome-www.youtube.com__-Profile_1") | .address' | head -1)
+    # Focus the window
+    hyprctl dispatch focuswindow address:${WINDOW_ADDRESS}
+else
+    # Open YouTube web app using Chromium
+    chromium --ozone-platform=wayland --profile-directory="Profile 1" --app=https://www.youtube.com &
+fi

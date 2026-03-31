@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# ~/.local/bin/waybar-alarm-daemon
+# Watches for alarm time and triggers it
+ALARM_FILE="/tmp/waybar-alarm-time"
+STATE_FILE="/tmp/waybar-alarm-state"
+alarm_time=$(cat "$ALARM_FILE" 2>/dev/null)
+[[ -z "$alarm_time" ]] && exit 1
+while true; do
+    now=$(date +%H:%M)
+    state=$(cat "$STATE_FILE" 2>/dev/null)
+    [[ "$state" != "set" ]] && exit 0  # Dismissed or cleared
+    if [[ "$now" == "$alarm_time" ]]; then
+        echo "ringing" > "$STATE_FILE"
+        pkill -RTMIN+8 waybar 2>/dev/null
+        # Notification
+        notify-send -u critical -t 0 "⏰ Alarm!" "Your alarm for $alarm_time is going off.\nClick the clock in Waybar to dismiss."
+        # Sound loop - plays until dismissed
+        while [[ "$(cat $STATE_FILE 2>/dev/null)" == "ringing" ]]; do
+            paplay ~/.local/share/sounds/alarm.mp3 2>/dev/null
+            sleep 2
+        done
+        exit 0
+    fi
+    sleep 15
+done

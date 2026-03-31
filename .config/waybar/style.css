@@ -1,0 +1,414 @@
+@import "colors.css";
+@import "/usr/lib/hyprwhspr/config/waybar/hyprwhspr-style.css";
+
+/*-----base styles----*/
+* {
+    border: none;
+    font-family: 'JetBrainsMono Nerd Font';
+    font-size: 14px;
+    color: @foreground;
+    border-radius: 0;
+}
+
+window#waybar {
+    background: transparent;
+    margin: 6px 6px 2px 6px;
+}
+
+/*-----module groups----*/
+.modules-left {
+    margin: 2px 0 2px 6px;
+    background-color: alpha(@surface-dim, 0.98);
+    border-radius: 10px;
+    padding: 0px 3px;
+}
+
+.modules-center {
+    background-color: alpha(@surface-dim, 0.98);
+    margin: 2px 0 2px 0;
+    border-radius: 10px;
+    padding: 0px 0px;
+}
+
+.modules-right {
+    background-color: alpha(@surface-dim, 0.98);
+    margin: 2px 6px 2px 0;
+    border-radius: 10px;
+    padding: 0px 3px;
+}
+
+/*-----hover effect----*/
+#custom-cava:hover,
+#custom-nowplaying:hover,
+#pulseaudio:hover,
+#disk:hover,
+#memory:hover,
+#cpu:hover,
+#custom-hyprwhspr:hover,
+#network:hover,
+#bluetooth:hover,
+#clock:hover,
+#custom-voxtype:hover,
+#custom-expand-icon:hover,
+#battery:hover,
+#custom-battery:hover,
+#temperature:hover,
+#custom-media:hover,
+#mode:hover,
+#custom-power:hover,
+#custom-menu:hover,
+#idle_inhibitor:hover,
+#custom-mako:hover,
+#hardware:hover,
+#custom-omarchy:hover,
+#custom-update:hover,
+#custom-audio-output:hover,
+#custom-hardware-icon:hover,
+#custom-mic-toggle:hover {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+/*-----LEFT MODULES----*/
+/* cava */
+#custom-cava {
+    padding: 1px 0px 1px 12px;
+    color: #b06285;
+    background-color: transparent;
+    font-size: 6px;
+    letter-spacing: -1px;
+}
+
+/* nowplaying */
+#custom-nowplaying {
+    padding: 1px 10px 1px 1px;
+    color: #b06285;
+    background-color: transparent;
+}
+
+#custom-nowplaying.stopped {
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+}
+
+#custom-nowplaying.paused {
+    color: alpha(#b06285, 0.3);
+}
+
+/* pulseaudio */
+#pulseaudio {
+    padding: 1px 14px 1px 0px;
+}
+
+#pulseaudio.muted {
+    color: @error;
+}
+
+/*-----CENTER MODULES----*/
+/* workspaces */
+#workspaces button {
+    background-color: transparent;
+    color: alpha(@foreground, 0.6);
+    border: none;
+    border-radius: 0;
+    padding: 0 8px;
+    margin: 0;
+    transition: all 0.3s ease-in-out;
+}
+
+#workspaces button:hover {
+    background-color: alpha(@surface, 0.3);
+    color: @foreground;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+#workspaces button.active {
+    background-color: @primary;
+    color: @on-primary;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    box-shadow: inset 0 0 0 2px #000000;
+    padding: 0 14px;
+    min-width: 36px;
+    transition: all 0.3s ease-in-out;
+}
+
+#workspaces button.empty {
+    background-color: transparent;
+    color: alpha(@foreground, 0.25);
+    border: none;
+    opacity: 0.5;
+    transition: all 0.3s ease-in-out;
+}
+
+#workspaces button.empty:hover {
+    opacity: 1;
+    background-color: alpha(@surface, 0.2);
+    color: alpha(@foreground, 0.7);
+    border: none;
+    border-radius: 12px;
+}
+
+#workspaces button.empty.active {
+    background-color: @primary;
+    color: @on-primary;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    box-shadow: inset 0 0 0 2px #000000;
+    padding: 0 14px;
+    min-width: 36px;
+    opacity: 1;
+}
+
+#workspaces button.special {
+    background-color: @secondary;
+    color: @on-primary;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    box-shadow: inset 0 0 0 2px #000000;
+    padding: 0 14px;
+    min-width: 36px;
+}
+
+#workspaces button.special.active {
+    background-color: @tertiary;
+    color: @on-primary;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    box-shadow: inset 0 0 0 2px #000000;
+    padding: 0 14px;
+    min-width: 36px;
+    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/*-----RIGHT MODULES----*/
+/* tray expander group */
+#custom-expand-icon {
+    padding: 1px 12px 1px 6px;
+    color: #b8bb26;
+}
+
+.tray-group-item {
+    background-color: transparent;
+}
+
+/* disk */
+#disk{
+    padding: 2px 8px 2px 14px;
+    color: #4f7487;
+}
+
+/* memory */
+#memory {
+    padding: 1px 8px;
+    color: #4f7487;
+    background-color: transparent;
+}
+
+/* cpu */
+#cpu {
+    padding: 1px 8px;
+    color: #4f7487;
+    background-color: transparent;
+}
+
+/* tray */
+#tray {
+    padding: 2px 8px 2px 14px;
+    color: @foreground;
+}
+
+/* hyprwhspr */
+#custom-hyprwhspr { 
+  padding: 1px 0px 2px 10px;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+#custom-hyprwhspr.muted {
+  color: #fb4934;
+}
+
+#custom-hyprwhspr.recording {
+  color: #82bf56;
+  border-bottom-color: #82bf56;
+  font-family: 'JetBrainsMono Nerd Font';
+  letter-spacing: 0.5px;
+}
+
+/* network */
+#network {
+    padding: 1px 10px 1px 6px;
+}
+
+/* bluetooth */
+#bluetooth {
+    padding: 1px 10px 1px 14px;
+}
+
+#bluetooth.connected {
+    color: @secondary;
+}
+
+/* clock */
+#clock {
+    padding: 1px 8px;
+    color: @foreground;
+    background-color: transparent;
+}
+
+/* Voxtype module */
+
+
+#custom-voxtype {
+  padding: 0 8px;
+  margin: 0 4px;
+}
+
+#custom-voxtype.idle {
+  color: @text;
+}
+
+#custom-voxtype.recording {
+  color: #ff6b6b;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+#custom-voxtype.transcribing {
+  color: #ffd93d;
+}
+
+#custom-voxtype.stopped {
+  color: #6c757d;
+  opacity: 0.5;
+}
+
+/*-----UNUSED/GENERAL MODULE STYLES----*/
+#battery,
+#custom-battery,
+#temperature,
+#custom-media,
+#mode,
+#custom-power,
+#custom-menu,
+#idle_inhibitor,
+#custom-mako,
+#hardware,
+#custom-omarchy,
+#custom-update {
+    padding: 1px 8px;
+    color: @foreground;
+    background-color: transparent;
+}
+
+#mode {
+    color: @foreground;
+    font-weight: bold;
+}
+
+#custom-power {
+    padding: 1px 8px;
+}
+
+#custom-battery.warning,
+#battery.warning {
+    color: @foreground;
+}
+
+#custom-battery.critical,
+#battery.critical {
+    color: @error;
+}
+
+#custom-battery.charging,
+#battery.charging {
+    color: @foreground;
+}
+
+#custom-audio-output {
+  padding: 1px 14px 1px 6px;
+}
+
+#custom-hardware-icon {
+    padding-right: 6px;
+}
+
+.hardware-group-item {
+    background-color: transparent;
+}
+
+#custom-mic-toggle{
+    padding: 2px 8px 2px 14px;
+    color: @foreground;
+}
+
+#custom-voxtype {
+    min-width: 12px;
+    margin: 0 0 0 7.5px;
+}
+
+#custom-voxtype.recording {
+    color: @error;
+}
+
+/*-----tooltip----*/
+tooltip {
+    background: alpha(@surface-dim, 0.98);
+    border: none;
+}
+
+tooltip label {
+    color: @foreground;
+}
+
+/* Alarm indicator */
+#custom-alarm-indicator {
+    padding: 1px 0px 1px 0px;
+    min-width: 0;
+    transition: all 0.3s ease;
+}
+
+#custom-alarm-indicator.idle {
+    min-width: 0;
+    padding: 0;
+}
+
+#custom-alarm-indicator.alarm-set {
+    padding: 1px 6px 1px 0px;
+    color: #fabd2f;
+}
+
+#custom-alarm-indicator.ringing {
+    padding: 1px 6px 1px 0px;
+    color: #cc241d;
+    animation: alarm-pulse 0.6s ease-in-out infinite alternate;
+}
+
+/* Clock gets red flash when alarm rings */
+#clock.ringing {
+    color: #cc241d;
+    animation: alarm-pulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes alarm-pulse {
+    from {
+        color: #cc241d;
+        text-shadow: 0 0 4px #cc241d;
+    }
+    to {
+        color: #fb4934;
+        text-shadow: 0 0 12px #fb4934, 0 0 20px #cc241d;
+    }
+}
+
+#custom-idle-indicator.active,
+#custom-notification-silencing-indicator.active {
+  color: #a55555;
+}

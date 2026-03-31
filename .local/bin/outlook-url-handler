@@ -1,0 +1,10 @@
+#!/bin/bash
+
+url="$1"
+echo "$(date): Got URL: $url" >> /tmp/outlook-url-handler.log
+
+if [[ "$url" =~ outlook\.(live|office|com) ]] || [[ "$url" =~ ^mailto: ]]; then
+    /opt/outlook-for-linux/outlook-for-linux "$url" &
+else
+    xdg-open "$url"
+fi

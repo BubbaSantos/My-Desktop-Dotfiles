@@ -1,0 +1,50 @@
+#!/bin/bash
+# Work Workflow Script (Desktop)
+SLEEP=0.3
+LAUNCH_SLEEP=0.8
+GROUP_SLEEP=1.2
+# --- Workspace 11: Notion ---
+hyprctl dispatch workspace 11
+sleep $SLEEP
+~/.config/hypr/scripts/toggle-notion.sh &
+sleep $LAUNCH_SLEEP
+# --- Workspace 1: Vivaldi, ChatGPT, To Do ---
+hyprctl dispatch workspace 1
+sleep $SLEEP
+vivaldi --ozone-platform=wayland --enable-features=TouchpadOverscrollHistoryNavigation,UseOzonePlatform,WaylandWindowDecorations --force-device-scale-factor=1 https://midaspro.mab.org.uk/Midas.Homepage/ &
+sleep $LAUNCH_SLEEP
+chromium --app="https://chatgpt.com" &
+sleep $GROUP_SLEEP
+hyprctl dispatch togglegroup
+sleep $SLEEP
+chromium --app="https://to-do.office.com/tasks/inbox" &
+sleep $LAUNCH_SLEEP
+hyprctl dispatch lockactivegroup lock
+sleep $SLEEP
+# --- Workspace 2: Outlook, ChatGPT, To Do ---
+hyprctl dispatch workspace 2
+sleep $SLEEP
+~/.config/hypr/scripts/toggle-outlook.sh &
+sleep $LAUNCH_SLEEP
+chromium --app="https://chatgpt.com" &
+sleep $GROUP_SLEEP
+hyprctl dispatch togglegroup
+sleep $SLEEP
+chromium --app="https://to-do.office.com/tasks/inbox" &
+sleep $LAUNCH_SLEEP
+hyprctl dispatch lockactivegroup lock
+sleep $SLEEP
+# --- Workspace 3: Teams ---
+hyprctl dispatch workspace 3
+sleep $SLEEP
+/opt/teams-for-linux/teams-for-linux &
+sleep $LAUNCH_SLEEP
+# Focus Workspace 1
+hyprctl dispatch workspace 1
+sleep $LAUNCH_SLEEP
+# Move Teams to workspace 3
+ADDRESS=$(hyprctl clients -j | jq -r '.[] | select(.class == "teams-for-linux") | .address' | head -1)
+if [ -n "$ADDRESS" ]; then
+    hyprctl dispatch movetoworkspacesilent "3,address:$ADDRESS"
+fi
+notify-send "Work Workflow" "Applications launched" -t 3000

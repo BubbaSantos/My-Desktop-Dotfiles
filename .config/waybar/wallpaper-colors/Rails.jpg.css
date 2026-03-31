@@ -1,0 +1,13 @@
+@define-color background #031111;
+@define-color foreground #CEBCAD;
+@define-color primary #BE7D75;
+@define-color primary-container #BE7D75;
+@define-color on-primary #000000;
+@define-color secondary #BE7D75;
+@define-color secondary-container #BE7D75;
+@define-color tertiary #BE7D75;
+@define-color surface #031111;
+@define-color surface-dim #031111;
+@define-color surface-bright #031111;
+@define-color error #ffb4ab;
+@define-color outline #CEBCAD;

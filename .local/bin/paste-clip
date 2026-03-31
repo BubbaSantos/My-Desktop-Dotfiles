@@ -1,0 +1,18 @@
+#!/bin/bash
+# ~/.local/bin/paste-clip
+# Usage: paste-clip 2
+
+N=${1:-1}
+
+item=$(python3 -c "
+import json
+with open('/home/bubba/.config/clipse/clipboard_history.json') as f:
+    data = json.load(f)
+items = data['clipboardHistory']
+n = $N - 1
+if n < len(items):
+    print(items[n]['value'], end='')
+")
+
+echo -n "$item" | wl-copy
+wtype -M ctrl v

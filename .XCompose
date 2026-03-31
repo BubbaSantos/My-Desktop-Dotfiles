@@ -1,0 +1,113 @@
+
+# Run omarchy-restart-xcompose in the terminal to get the changes picked up.
+
+
+
+####################################
+# Emails
+####################################
+<Multi_key> <c> <space> : "sean@carams.co.uk"
+<Multi_key> <g> <space> : "ultimatessambbo@gmail.com"
+<Multi_key> <h> <space> : "seanmaclean@hotmail.co.uk"
+<Multi_key> <n> <space> : "Sean MacLean"
+
+
+####################################
+# Terminal Commands
+####################################
+<Multi_key> <t> <s> <space> : "launch-timeshift"
+<Multi_key> <s> <n> <i> <p> <space> : "nvim ~/.config/snippets/work-snippets.txt"
+<Multi_key> <x> <c> <o> <m> <space> : "nvim /home/bubba/.XCompose"
+<Multi_key> <c> <s> <s> <space> : "nvim /home/bubba/.config/waybar/style-template.css"
+<Multi_key> <j> <s> <o> <n> <space> : "nvim /home/bubba/.config/waybar/config.jsonc"
+
+
+####################################
+# Providers & Companies
+####################################
+<Multi_key> <l> <g> <space> : "Legal & General"
+<Multi_key> <m> <a> <b> <space> : "Mortgage Advice Bureau"
+<Multi_key> <m> <a> <b> <p> <space> : "Mortgage Advice Bureau - Protection"
+<Multi_key> <r> <l> <space> : "Royal London"
+
+
+####################################
+# Products / Insurance Terms
+####################################
+<Multi_key> <c> <i> <space> : "Critical Illness"
+<Multi_key> <c> <i> <c> <space> : "Critical Illness Cover"
+<Multi_key> <c> <i> <e> <space> : "CI Expert"
+<Multi_key> <f> <i> <b> <space> : "Family Income Benefit"
+<Multi_key> <i> <p> <space> : "Income Protection"
+<Multi_key> <t> <p> <d> <space> : "Total Permanent Disability"
+<Multi_key> <w> <o> <p> <space> : "Waiver of Premium"
+
+
+
+####################################
+# Email Phrases & Sign-offs
+####################################
+<Multi_key> <b> <r> <space> : "Best Regards,"
+<Multi_key> <h> <y> <a> <w> <space> : "Hope you are well?"
+<Multi_key> <k> <r> <space> : "Kind Regards,"
+<Multi_key> <m> <t> <space> : "Many Thanks,"
+<Multi_key> <t> <f> <y> <t> <space> : "Thanks very much for your time today, it was good speaking with you."
+<Multi_key> <i> <w> <c> <space> : " I will call you on"
+
+
+####################################
+# Midas / Other Phrases
+####################################
+<Multi_key> <a> <r> <space> : "All of the potential risks were discussed and the client's decisions were based on these conversations."
+<Multi_key> <f> <s> <space> : "I feel secure in my current job and I am confident I could find new employment if needed"
+<Multi_key> <i> <d> <x> <space> : "this will help to combat inflation and ensure your cover retains its value"
+<Multi_key> <j> <v> <s> <space> : "it was a relatively small cost to split the cover into single policies which effectively doubles your overall cover"
+<Multi_key> <n> <d> <space> : "I don't have any dependents"
+<Multi_key> <n> <p> <space> : "this was not a priority for me at this time and I would prefer to use my budget on areas I feel are more important"
+<Multi_key> <s> <c> <space> : "I already have sufficient cover in place"
+<Multi_key> <f> <c> <space> : "you didn't feel this was necessary at this time"
+<Multi_key> <m> <c> <space> : "they offered the most comprehensive Critical Illness Cover available to you, providing the widest range of medical conditions within your budget"
+
+
+####################################
+# Appointments & Reviews
+####################################
+<Multi_key> <p> <r> <c> <m> <s> <space> : "Protection Review - CARA Mortgage Services"
+<Multi_key> <c> <m> <s> <p> <space> : "CARA Mortgage Services - Protection"
+<Multi_key> <c> <p> <r> <space> : "CARA 🏠 Protection Review"
+<Multi_key> <c> <p> <r> <e> <c> <space> : "CARA 🏠 Protection Recommendation"
+<Multi_key> <c> <p> <s> <r> <space> : "CARA 🏠 Protection Suitability Report"
+<Multi_key> <m> <p> <a> <space> : "- Mortgage Protection Appointment with Sean MacLean"
+<Multi_key> <f> <u> <a> <space> : "- CARA 🏠 Follow Up Appointment"
+<Multi_key> <a> <s> <space> : "App Submitted - "
+<Multi_key> <m> <a> <l> <r> <space> : "Missed Appointment - Let's Rearrange"
+<Multi_key> <b> <l> : "https://outlook.office.com/bookwithme/user/eaeae999525c42009570b2b665f9266a@carams.co.uk/meetingtype/LwTwP7Vq10-sFwifPvuPvQ2?anonymous&ep=mLinkFromTile"
+<Multi_key> <b> <d> : "Book time with Sean MacLean: CARA 🏠 Protection Review"
+<Multi_key> <h> <l> : "https://forms.office.com/e/LXzurZWwsE"
+<Multi_key> <h> <d> : "CARA Health & Lifestyle Questionnaire 2026"
+
+
+
+
+
+####################################
+# Miscellaneous / Links
+####################################
+<Multi_key> <d> <l> <n> <space> : "MCLEA902102SA9RE"
+<Multi_key> <b> <w> <p> : "WArdB(gus)1967::"
+<Multi_key> <g> <p> <space> : "For The Attention Of The GP"
+<Multi_key> <o> <p> <t> <y> <space> : "Our Promise to You"
+<Multi_key> <o> <p> <t> <y> <s> <i> <g> <n> <space> : "We have both read and understood the Our promise to You document and we are both happy with its contents and are happy to proceed on this basis"
+<Multi_key> <p> <s> <r> <space> : "Please find enclosed the protection suitability report, which outlines my recommendations for the insurance. Please read through this as well as the other attached documents and let me know if you have any questions.\n\nKind Regards,\n\nSean"
+<Multi_key> <p> <v> <space> : "https://vimeo.com/668579185/6e6d4c6fdd"
+<Multi_key> <r> <w> <space> : " Rewrite the following..."
+<Multi_key> <r> <w> <r> <space> : " Rewrite my reply..."
+<Multi_key> <numbersign> <space> : "07383 562844"
+<Multi_key> <s> <l> <g> <space> : "85603935"
+<Multi_key> <s> <l> <g> <p> <space> : "CARAJune2025"
+<Multi_key> <l> <g> <p> <space> : "2p>Na2yYzt:=@*7"
+<Multi_key> <p> <c> : "Premium:\nCommission:" 
+
+
+
+

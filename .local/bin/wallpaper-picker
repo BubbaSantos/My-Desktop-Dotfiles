@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -eu
+
+WALL_DIR="$HOME/.config/omarchy/current/theme/backgrounds"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/wallpaper-picker"
+THUMB_DIR="$CACHE_DIR/thumbs"
+CURRENT_LINK="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper-picker/current"
+
+mkdir -p "$THUMB_DIR" "$(dirname "$CURRENT_LINK")"
+
+mapfile -d '' -t imgs < <(find -L "$WALL_DIR" -type f \( \
+  -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \
+\) -print0 | sort -z)
+
+[[ ${#imgs[@]} -eq 0 ]] && exit 0
+
+# Create thumbnails (large)
+for img in "${imgs[@]}"; do
+  base="$(basename "$img")"
+  thumb="$THUMB_DIR/${base%.*}.png"
+  if [[ ! -f "$thumb" ]]; then
+    magick "$img" -auto-orient \
+      -thumbnail 512x512^ \
+      -gravity center \
+      -extent 512x512 \
+      "png:$thumb" 2>/dev/null || true
+  fi
+done
+
+# Build icon-only rofi entries
+entries=""
+for img in "${imgs[@]}"; do
+  base="$(basename "$img")"
+  thumb="$THUMB_DIR/${base%.*}.png"
+  entries+="\x00icon\x1f${thumb}\n"
+done
+
+choice="$(printf "%b" "$entries" | rofi -dmenu \
+  -show-icons \
+  -columns 4 \
+  -lines 2 \
+  -theme-str 'listview { spacing: 20px; } element { padding: 6px; }')"
+
+[[ -z "${choice:-}" ]] && exit 0
+
+# Map selection back to image index
+index=$(printf "%b" "$entries" | nl -w1 -s: | grep -nFx "$choice" | cut -d: -f1 | head -n1)
+selected="${imgs[$((index-1))]}"
+
+# Ensure swww is running
+if ! pgrep -x swww-daemon >/dev/null 2>&1; then
+  swww-daemon --format xrgb &
+  sleep 0.2
+fi
+
+swww img "$selected" \
+  --transition-type any \
+  --transition-duration 1.2 \
+  --transition-fps 60
+
+ln -sf "$selected" "$CURRENT_LINK"

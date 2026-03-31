@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -e
+
+DIR="$HOME/Pictures/Screenshots"
+mkdir -p "$DIR"
+FILE="$DIR/region-$(date +%s).png"
+
+# Take region screenshot
+grim -g "$(slurp)" "$FILE"
+
+# Exit if selection cancelled
+[ -s "$FILE" ] || exit 0
+
+# Copy image to clipboard with proper MIME type
+wl-copy --type image/png < "$FILE"
+
+# Open Google Lens
+xdg-open "https://lens.google.com/upload"
+
+# Give the browser more time to fully load and focus
+sleep 2
+
+# Simulate Ctrl+V to paste image
+wtype -M ctrl v -m ctrl
+
+# Notify
+notify-send "Screenshot" "Region sent to Google Lens"

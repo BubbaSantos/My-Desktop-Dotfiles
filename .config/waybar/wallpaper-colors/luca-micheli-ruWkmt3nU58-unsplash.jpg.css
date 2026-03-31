@@ -1,0 +1,13 @@
+@define-color background #181A27;
+@define-color foreground #D78BCE;
+@define-color primary #5D5699;
+@define-color primary-container #5D5699;
+@define-color on-primary #000000;
+@define-color secondary #5D5699;
+@define-color secondary-container #5D5699;
+@define-color tertiary #5D5699;
+@define-color surface #181A27;
+@define-color surface-dim #181A27;
+@define-color surface-bright #181A27;
+@define-color error #ffb4ab;
+@define-color outline #D78BCE;

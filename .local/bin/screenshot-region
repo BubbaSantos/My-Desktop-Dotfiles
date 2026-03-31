@@ -1,0 +1,17 @@
+#!/bin/bash
+GEOM=$(slurp)
+[ -z "$GEOM" ] && exit 1
+RX=$(echo "$GEOM" | awk '{print $1}' | cut -d, -f1)
+RY=$(echo "$GEOM" | awk '{print $1}' | cut -d, -f2)
+TITLE=$(hyprctl clients -j | jq -r --argjson rx "$RX" --argjson ry "$RY" '
+  [.[] | select(
+    .at[0] <= $rx and .at[1] <= $ry and
+    (.at[0] + .size[0]) >= $rx and
+    (.at[1] + .size[1]) >= $ry
+  )] | first | .title // "region"
+' | tr -s " " "_" | tr -cd "[:alnum:]_-")
+TITLE=${TITLE:-region}
+FILE=~/Pictures/Screenshots/region-${TITLE}-$(date +%s).png
+grim -g "$GEOM" - | tee "$FILE" | wl-copy
+ACTION=$(notify-send -A "default=Open in satty" "Screenshot" "Region saved + copied" --wait)
+[ "$ACTION" = "default" ] && satty -f "$FILE"

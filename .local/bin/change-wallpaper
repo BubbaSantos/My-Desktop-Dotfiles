@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Check if wallpaper path is provided
+if [ -z "$1" ]; then
+    echo "Usage: change-wallpaper <path-to-wallpaper> [--pick-colors]"
+    exit 1
+fi
+
+WALLPAPER=$(realpath "$1")
+WALLPAPER_NAME=$(basename "$WALLPAPER")
+COLORS_DIR="$HOME/.config/waybar/wallpaper-colors"
+SAVED_COLORS="$COLORS_DIR/${WALLPAPER_NAME}.css"
+
+if [ ! -f "$WALLPAPER" ]; then
+    echo "Error: Wallpaper file not found: $WALLPAPER"
+    exit 1
+fi
+
+echo "================================"
+echo "Changing wallpaper to: $WALLPAPER_NAME"
+echo "================================"
+
+# Change wallpaper with swww
+echo "1. Setting wallpaper with swww..."
+swww img "$WALLPAPER" --transition-type fade --transition-duration 1
+
+# Check if --pick-colors flag is set
+if [ "$2" == "--pick-colors" ]; then
+    echo "2. Pick your colors manually..."
+    pick-wallpaper-colors "$WALLPAPER"
+# Check if saved colors exist for this wallpaper
+elif [ -f "$SAVED_COLORS" ]; then
+    echo "2. Using saved colors for this wallpaper..."
+    cp "$SAVED_COLORS" ~/.config/waybar/colors.css
+else
+    echo "2. Generating color scheme with matugen..."
+    matugen image "$WALLPAPER"
+fi
+
+# Reload both waybars
+echo "3. Reloading Waybars..."
+~/.config/waybar/refresh-bars.sh
+
+echo "================================"
+echo "✓ Done!"
+echo "================================"

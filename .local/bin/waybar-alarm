@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# ~/.local/bin/waybar-alarm
+ALARM_FILE="/tmp/waybar-alarm-time"
+STATE_FILE="/tmp/waybar-alarm-state"
+
+get_state() {
+    cat "$STATE_FILE" 2>/dev/null || echo "idle"
+}
+
+set_state() {
+    echo "$1" > "$STATE_FILE"
+}
+
+tui_menu() {
+    local state
+    state=$(get_state)
+
+    if [[ "$state" == "ringing" ]]; then
+        set_state "idle"
+        rm -f "$ALARM_FILE"
+        pkill -f "waybar-alarm-daemon" 2>/dev/null
+        pkill -f "paplay" 2>/dev/null
+        pkill -RTMIN+8 waybar 2>/dev/null
+        return
+    fi
+
+    if [[ "$state" == "set" ]]; then
+        local alarm_time
+        alarm_time=$(cat "$ALARM_FILE" 2>/dev/null)
+
+        local chosen
+        chosen=$(printf 'Cancel alarm (%s)\nKeep alarm (%s)\n' "$alarm_time" "$alarm_time" | \
+            fzf --prompt="Alarm set for $alarm_time > " \
+                --height=6 \
+                --layout=reverse \
+                --border=rounded \
+                --no-info \
+                --no-scrollbar)
+
+        if [[ "$chosen" == Cancel* ]]; then
+            set_state "idle"
+            rm -f "$ALARM_FILE"
+            pkill -f "waybar-alarm-daemon" 2>/dev/null
+            pkill -RTMIN+8 waybar 2>/dev/null
+        fi
+        return
+    fi
+
+    # Idle — build 32 slots in 15-min increments from now
+    local now_hour now_min
+    now_hour=$(date +%H)
+    now_min=$(date +%M)
+
+    local next_min=$(( (10#$now_min / 15 + 1) * 15 ))
+    local carry=0
+    if (( next_min >= 60 )); then next_min=$(( next_min - 60 )); carry=1; fi
+    local cur_hour=$(( (10#$now_hour + carry) % 24 ))
+    local cur_min=$next_min
+
+    local slot_times=()
+    for i in $(seq 0 31); do
+        slot_times+=( "$(printf '%02d:%02d' $cur_hour $cur_min)" )
+        cur_min=$(( cur_min + 15 ))
+        if (( cur_min >= 60 )); then
+            cur_min=$(( cur_min - 60 ))
+            cur_hour=$(( (cur_hour + 1) % 24 ))
+        fi
+    done
+
+    local chosen
+    chosen=$(printf '%s\n' "${slot_times[@]}" | \
+        fzf --prompt="󰀠  Set alarm > " \
+            --height=12 \
+            --layout=reverse \
+            --border=rounded \
+            --no-info \
+            --no-scrollbar)
+
+    [[ -z "$chosen" ]] && return
+
+    echo "$chosen" > "$ALARM_FILE"
+    set_state "set"
+    nohup bash ~/.local/bin/waybar-alarm-daemon &>/dev/null &
+    pkill -RTMIN+8 waybar 2>/dev/null
+}
+
+on_click() {
+    local state
+    state=$(get_state)
+
+    if [[ "$state" == "ringing" ]]; then
+        set_state "idle"
+        rm -f "$ALARM_FILE"
+        pkill -f "waybar-alarm-daemon" 2>/dev/null
+        pkill -f "paplay" 2>/dev/null
+        pkill -RTMIN+8 waybar 2>/dev/null
+        pkill -RTMIN+8 waybar 2>/dev/null
+        return
+    fi
+
+    alacritty --title "waybar-alarm" \
+           --option "font.size=11" \
+           -e bash ~/.local/bin/waybar-alarm --tui &
+}
+
+output_json() {
+    local state
+    state=$(get_state)
+    case "$state" in
+        ringing)
+            echo '{"text": "󰀠", "class": "ringing", "tooltip": "Alarm ringing! Click to dismiss"}'
+            ;;
+        set)
+            local alarm_time
+            alarm_time=$(cat "$ALARM_FILE" 2>/dev/null)
+            echo '{"text": "󰀠", "class": "alarm-set", "tooltip": "Alarm set for '"$alarm_time"'\nClick to cancel"}'
+            ;;
+        *)
+            echo '{"text": "", "class": "idle", "tooltip": "Click to set alarm"}'
+            ;;
+    esac
+}
+
+case "$1" in
+    --tui)   tui_menu ;;
+    click)   on_click ;;
+    *)       output_json ;;
+esac

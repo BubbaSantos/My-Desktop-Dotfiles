@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Get current wallpaper from swww
+CURRENT_WALLPAPER=$(swww query | grep -oP 'image: \K.*')
+
+if [ -z "$CURRENT_WALLPAPER" ]; then
+    echo "Error: Could not detect current wallpaper"
+    echo "Make sure swww is running"
+    exit 1
+fi
+
+echo "Current wallpaper: $(basename "$CURRENT_WALLPAPER")"
+echo ""
+
+# Use the pick-wallpaper-colors script
+pick-wallpaper-colors "$CURRENT_WALLPAPER"
+
+# Reload waybars
+echo ""
+echo "Reloading Waybars..."
+~/.config/waybar/refresh-bars.sh
+
+echo "✓ Colors updated for current wallpaper!"

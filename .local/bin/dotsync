@@ -1,0 +1,12 @@
+#!/bin/bash
+GIT="git --git-dir=$HOME/.desktop-dotfiles/ --work-tree=$HOME"
+pacman -Qqe > ~/.local/bin/packages.txt
+$GIT add ~/.local/bin/
+$GIT add -u
+if ! $GIT diff --cached --quiet; then
+    $GIT commit -m "dotfiles: $(date '+%Y-%m-%d %H:%M')"
+    $GIT push
+    echo "Dotfiles synced."
+else
+    echo "Nothing to commit."
+fi

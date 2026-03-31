@@ -1,0 +1,22 @@
+#!/bin/bash
+
+CLASS="vivaldi-outlook.live.com__-Profile_1"
+SPECIAL="hotmail"
+
+WINDOW=$(hyprctl clients -j | python3 -c "
+import json, sys
+clients = json.load(sys.stdin)
+for c in clients:
+    if c['class'] == '$CLASS':
+        print(c['workspace']['name'])
+        break
+")
+
+if [[ "$WINDOW" == "special:$SPECIAL" ]]; then
+    hyprctl dispatch togglespecialworkspace $SPECIAL
+elif [[ -n "$WINDOW" ]]; then
+    hyprctl dispatch movetoworkspacesilent special:$SPECIAL,class:^${CLASS}$
+    hyprctl dispatch togglespecialworkspace $SPECIAL
+else
+    chromium --app=https://outlook.live.com/ --profile-directory="Default" &
+fi

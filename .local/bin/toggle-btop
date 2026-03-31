@@ -1,0 +1,8 @@
+#!/bin/bash
+if hyprctl clients | grep -q '"alacritty-btop"'; then
+    hyprctl dispatch togglespecialworkspace btop
+else
+    hyprctl dispatch togglespecialworkspace btop
+    alacritty --class alacritty-btop -e btop &
+fi
+

@@ -1,0 +1,9 @@
+#!/bin/bash
+WIN=$(hyprctl activewindow -j)
+TITLE=$(echo "$WIN" | jq -r ".title" | tr -s " " "_" | tr -cd "[:alnum:]_-")
+AT=$(echo "$WIN" | jq -r ".at | \"\(.[0]),\(.[1])\"")
+SIZE=$(echo "$WIN" | jq -r ".size | \"\(.[0])x\(.[1])\"")
+FILE=~/Pictures/Screenshots/window-${TITLE}-$(date +%s).png
+grim -g "${AT} ${SIZE}" - | tee "$FILE" | wl-copy
+ACTION=$(notify-send -A "default=Open in satty" "Screenshot" "Window saved + copied" --wait)
+[ "$ACTION" = "default" ] && satty -f "$FILE"

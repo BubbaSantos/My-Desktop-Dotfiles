@@ -1,0 +1,76 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: pick-wallpaper-colors <wallpaper-path>"
+    exit 1
+fi
+
+WALLPAPER="$1"
+WALLPAPER_NAME=$(basename "$WALLPAPER")
+COLORS_DIR="$HOME/.config/waybar/wallpaper-colors"
+COLORS_FILE="$COLORS_DIR/${WALLPAPER_NAME}.css"
+
+# Create colors directory if it doesn't exist
+mkdir -p "$COLORS_DIR"
+
+# Open the wallpaper in an image viewer
+hyprctl dispatch exec "imv $WALLPAPER &"
+sleep 0.5
+
+echo "========================================"
+echo "Pick colors for: $WALLPAPER_NAME"
+echo "========================================"
+echo ""
+echo "PICK 1: Active workspace button color"
+
+# Pick 1: Primary (active workspace)
+PRIMARY=$(hyprpicker -a)
+echo "✓ Primary (active workspace): $PRIMARY"
+echo ""
+
+echo "PICK 2: Font/text color"
+# Pick 2: Foreground (text color)
+FOREGROUND=$(hyprpicker -a)
+echo "✓ Foreground (text): $FOREGROUND"
+echo ""
+
+echo "PICK 3: Background color"
+# Pick 3: Background
+BACKGROUND=$(hyprpicker -a)
+echo "✓ Background: $BACKGROUND"
+
+# Kill the image viewer
+pkill imv
+
+# Calculate surface colors based on background
+# These are slightly lighter/darker variants for depth
+SURFACE_DIM="$BACKGROUND"
+SURFACE_BRIGHT=$(echo "$BACKGROUND" | sed 's/#//')
+
+# Save colors for this specific wallpaper
+cat > "$COLORS_FILE" << EOF
+@define-color background $BACKGROUND;
+@define-color foreground $FOREGROUND;
+@define-color primary $PRIMARY;
+@define-color primary-container $PRIMARY;
+@define-color on-primary #000000;
+@define-color secondary $PRIMARY;
+@define-color secondary-container $PRIMARY;
+@define-color tertiary $PRIMARY;
+@define-color surface $BACKGROUND;
+@define-color surface-dim $BACKGROUND;
+@define-color surface-bright $BACKGROUND;
+@define-color error #ffb4ab;
+@define-color outline $FOREGROUND;
+EOF
+
+# Also update the active colors.css
+cp "$COLORS_FILE" ~/.config/waybar/colors.css
+
+echo ""
+echo "========================================"
+echo "✓ Colors saved!"
+echo "  Primary (workspaces): $PRIMARY"
+echo "  Foreground (text): $FOREGROUND"
+echo "  Background: $BACKGROUND"
+echo "========================================"

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+SCHEMES_DIR="$HOME/.config/waybar/colorschemes"
+COLORS="$HOME/.config/waybar/colors.css"
+
+chosen=$(ls "$SCHEMES_DIR"/*.css | xargs -n1 basename | sed 's/\.css$//' \
+    | rofi -dmenu -p "Waybar Colour" -i)
+
+[[ -z "$chosen" ]] && exit 0
+
+cp "$SCHEMES_DIR/$chosen.css" "$COLORS"
+bash ~/.config/waybar/refresh-bars.sh &>/dev/null
+notify-send "Waybar" "Colour scheme: $chosen"

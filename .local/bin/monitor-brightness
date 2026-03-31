@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+set -eu
+
+
+ACTION="${1:-}"
+STEP="${BRIGHTNESS_STEP:-10}"
+ICON="display-brightness"
+
+LOCK="/tmp/monitor-brightness.lock"
+exec 9>"$LOCK"
+flock -n 9 || exit 0
+
+notify() {
+  notify-send \
+    -a "Brightness" \
+    -i "$ICON" \
+    -h string:x-canonical-private-synchronous:brightness \
+    "Brightness" \
+    "$1"
+}
+
+pct_backlight() {
+  # Gets percentage like "25%" or sometimes "25,%"
+  brightnessctl -m 2>/dev/null \
+    | awk -F, 'NR==1{print $5}' \
+    | tr -d '%,'
+}
+
+pct_ddc() {
+  # Read VCP 10 current value (0-100) and remove any commas
+  ddcutil --display "$1" getvcp 10 2>/dev/null \
+    | awk -F'= *' '/current value/ {print $2}' \
+    | awk '{print $1}' \
+    | tr -d ','
+}
+
+
+set_backlight() {
+  case "$ACTION" in
+    up)   brightnessctl set "${STEP}%+" >/dev/null ;;
+    down) brightnessctl set "${STEP}%-" >/dev/null ;;
+    min)  brightnessctl set 0% >/dev/null ;;
+    max)  brightnessctl set 100% >/dev/null ;;
+    *) exit 2 ;;
+  esac
+}
+
+ddc_displays() {
+  local cache="/tmp/monitor-brightness.ddc"
+  local max_age=600
+
+  if [[ -f "$cache" ]] && (( $(date +%s) - $(stat -c %Y "$cache") < max_age )); then
+    cat "$cache"
+    return
+  fi
+
+  ddcutil detect 2>/dev/null | awk '/^Display [0-9]+/ {print $2}' | tee "$cache"
+}
+
+
+set_ddc() {
+  case "$ACTION" in
+    up)   ddcutil --noverify --display "$1" setvcp 10 + "$STEP" >/dev/null 2>&1 ;;
+    down) ddcutil --noverify --display "$1" setvcp 10 - "$STEP" >/dev/null 2>&1 ;;
+    min)  ddcutil --noverify --display "$1" setvcp 10 0 >/dev/null 2>&1 ;;
+    max)  ddcutil --noverify --display "$1" setvcp 10 100 >/dev/null 2>&1 ;;
+    *) exit 2 ;;
+  esac
+}
+
+
+PCT=""
+
+if brightnessctl -l 2>/dev/null | grep -qi backlight; then
+  set_backlight
+  PCT="$(pct_backlight || true)"
+else
+  DISPLAYS="$(ddc_displays || true)"
+  if [[ -n "${DISPLAYS:-}" ]]; then
+    for d in $DISPLAYS; do
+      set_ddc "$d"
+    done
+
+    first="$(printf "%s\n" "$DISPLAYS" | head -n 1)"
+    PCT="$(pct_ddc "$first" || true)"
+  fi
+fi
+
+# Final cleanup just in case anything odd slipped through
+PCT="$(printf "%s" "$PCT" | tr -d ' ,%')"
+
+if [[ -z "${PCT:-}" ]]; then
+  notify "changed"
+  exit 0
+fi
+
+notify "${PCT}%"

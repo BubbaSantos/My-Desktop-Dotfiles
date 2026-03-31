@@ -1,0 +1,12 @@
+#!/bin/bash
+# Check if Patreon webapp is running
+if hyprctl clients | grep -q "chrome-www.patreon.com__home-Default"; then
+    # Toggle the special workspace
+    hyprctl dispatch togglespecialworkspace Patreon
+else
+    # Launch Patreon first
+    chromium --profile-directory="Default" --app="https://www.patreon.com/home" &
+    sleep 2
+    # Then toggle the special workspace
+    hyprctl dispatch togglespecialworkspace Patreon
+fi

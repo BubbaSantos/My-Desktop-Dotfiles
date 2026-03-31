@@ -1,0 +1,22 @@
+#!/bin/bash
+
+WALLPAPER_DIR="/home/bubba/.config/omarchy/current/theme/backgrounds"
+
+# Log file for debugging
+LOG="/tmp/random-wallpaper.log"
+echo "===== $(date) =====" >> "$LOG"
+
+# Get random wallpaper
+WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" \) | shuf -n 1)
+
+echo "Random wallpaper: $WALLPAPER" >> "$LOG"
+
+if [ -z "$WALLPAPER" ]; then
+    echo "Error: No wallpapers found in $WALLPAPER_DIR" >> "$LOG"
+    exit 1
+fi
+
+echo "Selected random wallpaper: $(basename "$WALLPAPER")" >> "$LOG"
+
+# Use the change-wallpaper script
+/home/bubba/.local/bin/change-wallpaper "$WALLPAPER" >> "$LOG" 2>&1
