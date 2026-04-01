@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+# text-format-picker — format highlighted text via fzf TUI
+
+# Grab the previously focused window address before we steal focus
+PREV_WINDOW="$1"
+
+# Small delay to let clipboard settle
+sleep 0.1
+
+# Try primary selection first, fall back to regular clipboard
+INPUT="$(wl-paste --primary 2>/dev/null)"
+if [[ -z "$INPUT" ]]; then
+  INPUT="$(wl-paste 2>/dev/null)"
+fi
+
+if [[ -z "$INPUT" ]]; then
+  notify-send "Format Picker" "No text selected" -t 2000
+  exit 1
+fi
+
+transform() {
+  local mode="$1"
+  local text="$2"
+  case "$mode" in
+    "Title Case")
+      echo "$text" | python3 -c "import sys; print(sys.stdin.read().title().rstrip())"
+      ;;
+    "UPPER CASE")
+      echo "${text^^}"
+      ;;
+    "lower case")
+      echo "${text,,}"
+      ;;
+    "Sentence case")
+      python3 -c "
+import sys
+text = sys.stdin.read().rstrip()
+result = '. '.join(s.strip().capitalize() for s in text.split('. '))
+print(result)
+" <<< "$text"
+      ;;
+    "camelCase")
+      echo "$text" | python3 -c "
+import sys, re
+words = re.split(r'[\s_\-]+', sys.stdin.read().strip())
+print(words[0].lower() + ''.join(w.capitalize() for w in words[1:]))
+"
+      ;;
+    "PascalCase")
+      echo "$text" | python3 -c "
+import sys, re
+words = re.split(r'[\s_\-]+', sys.stdin.read().strip())
+print(''.join(w.capitalize() for w in words))
+"
+      ;;
+    "snake_case")
+      echo "$text" | python3 -c "
+import sys, re
+text = sys.stdin.read().strip()
+text = re.sub(r'[\s\-]+', '_', text)
+text = re.sub(r'([A-Z])', r'_\1', text).lstrip('_')
+print(text.lower())
+"
+      ;;
+    "kebab-case")
+      echo "$text" | python3 -c "
+import sys, re
+text = sys.stdin.read().strip()
+text = re.sub(r'[\s_]+', '-', text)
+text = re.sub(r'([A-Z])', r'-\1', text).lstrip('-')
+print(text.lower())
+"
+      ;;
+    "SCREAMING_SNAKE_CASE")
+      echo "$text" | python3 -c "
+import sys, re
+text = sys.stdin.read().strip()
+text = re.sub(r'[\s\-]+', '_', text)
+text = re.sub(r'([A-Z])', r'_\1', text).lstrip('_')
+print(text.upper())
+"
+      ;;
+    "Trim Whitespace")
+      echo "$text" | python3 -c "import sys; print(' '.join(sys.stdin.read().split()))"
+      ;;
+    "Reverse Words")
+      echo "$text" | python3 -c "import sys; words = sys.stdin.read().split(); print(' '.join(reversed(words)))"
+      ;;
+    "Toggle Case")
+      echo "$text" | python3 -c "import sys; print(sys.stdin.read().rstrip().swapcase())"
+      ;;
+    "Slug (URL safe)")
+      echo "$text" | python3 -c "
+import sys, re, unicodedata
+text = sys.stdin.read().strip().lower()
+text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode()
+text = re.sub(r'[^\w\s-]', '', text)
+text = re.sub(r'[\s_]+', '-', text).strip('-')
+print(text)
+"
+      ;;
+  esac
+}
+
+FORMATS=(
+  "Title Case"
+  "UPPER CASE"
+  "lower case"
+  "Sentence case"
+  "camelCase"
+  "PascalCase"
+  "snake_case"
+  "kebab-case"
+  "SCREAMING_SNAKE_CASE"
+  "Slug (URL safe)"
+  "Toggle Case"
+  "Trim Whitespace"
+  "Reverse Words"
+)
+
+CHOICE=$(printf '%s\n' "${FORMATS[@]}" | fzf \
+  --prompt="Format: " \
+  --header="Input: $(echo "$INPUT" | head -c 60)…" \
+  --preview="~/.local/bin/text-format-picker-preview $(printf '%q' "$INPUT") {}" \
+  --preview-window=up:4:wrap \
+  --height=80% \
+  --border=rounded \
+  --no-sort \
+  --bind="enter:accept" \
+)
+
+[[ -z "$CHOICE" ]] && exit 0
+
+RESULT=$(transform "$CHOICE" "$INPUT")
+
+# Copy to clipboard
+echo -n "$RESULT" | wl-copy
+echo -n "$RESULT" | wl-copy --primary
+
+# Refocus the previous window, then paste
+hyprctl dispatch focuswindow address:$PREV_WINDOW
+sleep 0.3
+wtype "$RESULT"
+
+notify-send "Format Picker" "$(echo "$RESULT" | head -c 80)" -t 2000

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+PREV=$(hyprctl activewindow -j | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['address'])")
+alacritty --class format-picker --option "font.size=12" -e ~/.local/bin/text-format-picker "$PREV"

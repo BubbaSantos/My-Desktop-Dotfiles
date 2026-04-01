@@ -1,7 +1,7 @@
 # Font and text
 font=JetBrains Mono 11
 markup=1
-format=<span font="14" weight="bold">%s</span>\n<span font="11">%b</span>
+format=<span font="12" weight="bold">%s</span>\n<span font="11">%b</span>
 text-color=#ffffff
 
 # Background and borders
