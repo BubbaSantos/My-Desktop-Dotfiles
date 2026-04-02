@@ -218,8 +218,7 @@
 
   "clock": {
     "interval": 1,
-    "format": "{:%A %d | %I:%M:%S %p}",
-    "format-alt": "{:%A %d %B %Y}",
+    "format": "{:%A %d %B %Y | %I:%M:%S %p}",
     "tooltip": true,
     "tooltip-format": "<tt><big>{calendar}</big></tt>",
     "on-click-right": "~/.local/bin/waybar-alarm click",
@@ -236,10 +235,10 @@
       }
     },
     "actions": {
+      "on-click": "mode",
       "on-click-right": "mode"
     }
   },
-
   "custom/alarm-indicator": {
     "exec": "~/.local/bin/waybar-alarm",
     "interval": 10,
