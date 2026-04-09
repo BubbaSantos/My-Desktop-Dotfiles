@@ -9,7 +9,13 @@ sleep 0.3
 INPUT="$(wl-paste 2>/dev/null)"
 [[ -z "$INPUT" ]] && exit 1
 
-RESULT=$(echo "$INPUT" | python3 -c "import sys; t = sys.stdin.read().title().rstrip(); print(t.rstrip('.').rstrip())")
+RESULT=$(echo "$INPUT" | python3 -c "
+import sys
+text = sys.stdin.read().strip()
+text = text.lower()
+text = text.rstrip('.')
+print(text, end='')
+")
 
 echo -n "$RESULT" | wl-copy
 wtype "$RESULT"

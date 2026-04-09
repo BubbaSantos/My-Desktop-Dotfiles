@@ -121,6 +121,7 @@ libinput-tools
 libpulse
 libqalculate
 libreoffice-fresh
+librewolf-bin
 libva-nvidia-driver
 libyaml
 limine
@@ -146,6 +147,7 @@ nautilus-python
 ncdu
 neovim
 nerd-dictation-git
+networkmanager
 noctalia-shell
 noisetorch
 noto-fonts
@@ -181,10 +183,12 @@ plymouth
 polkit-gnome
 postgresql-libs
 power-profiles-daemon
+proton-vpn-gtk-app
 python-gobject
 python-pip
 python-poetry-core
 python-terminaltexteffects
+qbittorrent
 qt5-wayland
 qt6-wayland
 remmina

@@ -1,8 +1,6 @@
 #!/bin/bash
-
-CLASS="vivaldi-mail.google.com__mail_u_0_-Profile_1"
+CLASS="chromium-mail.google.com__mail_u_0_-Default"
 SPECIAL="gmail"
-
 WINDOW=$(hyprctl clients -j | python3 -c "
 import json, sys
 clients = json.load(sys.stdin)
@@ -11,7 +9,6 @@ for c in clients:
         print(c['workspace']['name'])
         break
 ")
-
 if [[ "$WINDOW" == "special:$SPECIAL" ]]; then
     hyprctl dispatch togglespecialworkspace $SPECIAL
 elif [[ -n "$WINDOW" ]]; then
