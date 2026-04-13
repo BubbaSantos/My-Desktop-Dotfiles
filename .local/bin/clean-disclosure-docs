@@ -1,0 +1,7 @@
+#!/bin/bash
+find "$HOME/Documents/Work Documents/Disclosure Documents" \
+  -maxdepth 1 \
+  -iname "Our Promise To You - CARA - *.pdf" \
+  ! -iname "Our Promise To You - CARA - Blank.pdf" \
+  -mtime +1 \
+  -delete

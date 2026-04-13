@@ -41,3 +41,15 @@ default-timeout=0
 border-color=#7ccf94
 text-color=#ffffff
 default-timeout=4000
+
+[app-name=mic-muted]
+border-color=#ff6b6b
+background-color=#3a1a1aee
+text-color=#ff6b6b
+default-timeout=0
+
+[app-name=mic-unmuted]
+border-color=#7ccf94
+background-color=#1a3a1aee
+text-color=#7ccf94
+default-timeout=2000

@@ -18,9 +18,6 @@
   ],
   "modules-right": [
     "group/tray-expander",
-    "custom/hyprwhspr",
-    "network",
-    "bluetooth",
     "clock",
     "custom/alarm-indicator"
 
@@ -140,7 +137,11 @@
       "disk",
       "memory",
       "cpu",
-      "tray"
+      "tray",
+      "custom/hyprwhspr",
+      "network",
+      "bluetooth"
+      
     ]
   },
 

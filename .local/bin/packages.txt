@@ -89,6 +89,7 @@ gum
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
+handy-bin
 highlight-pointer
 hypridle
 hyprland
@@ -161,7 +162,6 @@ nvidia-open-dkms
 nvidia-settings
 nvidia-utils
 nwg-displays
-obs-backgroundremoval
 obs-studio
 omarchy-keyring
 omarchy-nvim

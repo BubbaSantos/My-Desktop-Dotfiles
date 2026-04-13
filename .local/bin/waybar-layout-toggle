@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+STATE_FILE="$HOME/.local/state/waybar-layout"
+WAYBAR_DIR="$HOME/.config/waybar"
+current=$(cat "$STATE_FILE" 2>/dev/null || echo "full")
+
+if [[ "$current" == "full" ]]; then
+  echo "compact" > "$STATE_FILE"
+  cp "$WAYBAR_DIR/config-main-compact.jsonc" "$WAYBAR_DIR/config-main.jsonc"
+else
+  echo "full" > "$STATE_FILE"
+  cp "$WAYBAR_DIR/config-main-full.jsonc" "$WAYBAR_DIR/config-main.jsonc"
+fi
+
+pkill -x waybar
+sleep 0.3
+uwsm app -- waybar &

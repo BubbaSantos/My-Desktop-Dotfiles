@@ -26,10 +26,10 @@ case "$1" in
     pactl set-source-mute @DEFAULT_SOURCE@ toggle
     muted=$(pactl get-source-mute @DEFAULT_SOURCE@ | grep -c "yes")
     if [[ "$muted" -eq 1 ]]; then
-      notify-send -u critical -r 9991 -t 0 "Mic muted"
+      notify-send --app-name=mic-muted -u critical -r 9991 -t 0 "  Mic muted"
     else
       makoctl dismiss --all
-      notify-send -t 2000 "Mic unmuted"
+      notify-send --app-name=mic-unmuted -t 2000 " Mic unmuted"
     fi
     pkill -RTMIN+2 waybar
     ;;

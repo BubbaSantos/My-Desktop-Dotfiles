@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 PREV=$(hyprctl activewindow -j | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['address'])")
-
 hyprctl dispatch focuswindow address:$PREV
 sleep 0.2
 wtype -M ctrl -k a -k c -m ctrl
 sleep 0.3
-
 INPUT="$(wl-paste 2>/dev/null)"
 [[ -z "$INPUT" ]] && exit 1
-
 RESULT=$(echo "$INPUT" | python3 -c "
-import sys
+import sys, re
 text = sys.stdin.read().strip()
-text = text.lower()
 text = text.rstrip('.')
+
+# Lowercase only the very first character
+if text:
+    text = text[0].lower() + text[1:]
+
 print(text, end='')
 ")
-
 echo -n "$RESULT" | wl-copy
 wtype "$RESULT"

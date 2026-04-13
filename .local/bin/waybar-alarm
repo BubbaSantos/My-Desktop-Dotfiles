@@ -27,7 +27,6 @@ tui_menu() {
     if [[ "$state" == "set" ]]; then
         local alarm_time
         alarm_time=$(cat "$ALARM_FILE" 2>/dev/null)
-
         local chosen
         chosen=$(printf 'Cancel alarm (%s)\nKeep alarm (%s)\n' "$alarm_time" "$alarm_time" | \
             fzf --prompt="Alarm set for $alarm_time > " \
@@ -36,7 +35,6 @@ tui_menu() {
                 --border=rounded \
                 --no-info \
                 --no-scrollbar)
-
         if [[ "$chosen" == Cancel* ]]; then
             set_state "idle"
             rm -f "$ALARM_FILE"
@@ -50,7 +48,6 @@ tui_menu() {
     local now_hour now_min
     now_hour=$(date +%H)
     now_min=$(date +%M)
-
     local next_min=$(( (10#$now_min / 15 + 1) * 15 ))
     local carry=0
     if (( next_min >= 60 )); then next_min=$(( next_min - 60 )); carry=1; fi
@@ -68,7 +65,7 @@ tui_menu() {
     done
 
     local chosen
-    chosen=$(printf '%s\n' "${slot_times[@]}" | \
+    chosen=$(printf '%s\n' "Cancel" "${slot_times[@]}" | \
         fzf --prompt="󰀠  Set alarm > " \
             --height=12 \
             --layout=reverse \
@@ -76,7 +73,7 @@ tui_menu() {
             --no-info \
             --no-scrollbar)
 
-    [[ -z "$chosen" ]] && return
+    [[ -z "$chosen" || "$chosen" == "Cancel" ]] && return
 
     echo "$chosen" > "$ALARM_FILE"
     set_state "set"
@@ -93,7 +90,6 @@ on_click() {
         rm -f "$ALARM_FILE"
         pkill -f "waybar-alarm-daemon" 2>/dev/null
         pkill -f "paplay" 2>/dev/null
-        pkill -RTMIN+8 waybar 2>/dev/null
         pkill -RTMIN+8 waybar 2>/dev/null
         return
     fi
