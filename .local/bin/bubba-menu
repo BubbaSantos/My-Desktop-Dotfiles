@@ -1,0 +1,87 @@
+#!/bin/bash
+# ~/.local/bin/bubba-menu
+# Personal scripts launcher — follows Omarchy menu conventions
+
+export PATH="$HOME/.local/bin:$HOME/.local/share/omarchy/bin:$PATH"
+
+BACK_TO_EXIT=false
+
+back_to() {
+  local parent_menu="$1"
+  if [[ $BACK_TO_EXIT == "true" ]]; then
+    exit 0
+  elif [[ -n $parent_menu ]]; then
+    "$parent_menu"
+  else
+    show_main_menu
+  fi
+}
+
+menu() {
+  local prompt="$1"
+  local options="$2"
+  echo -e "$options" | omarchy-launch-walker --dmenu --width 295 --minheight 1 --maxheight 630 -p "$prompt…" 2>/dev/null
+}
+
+terminal() {
+  xdg-terminal-exec --app-id=org.omarchy.terminal "$@"
+}
+
+# ── Text formatting ──────────────────────────────────────────────────────────
+
+show_text_menu() {
+  case $(menu "Format Text" "  Format Picker\n  Title Case\n  Sentence Case\n  Strip to Sentence") in
+  *Picker*)    terminal bash -c "text-format-picker" ;;
+  *Title*)     format-title-case ;;
+  *Sentence*)  format-sentence-case ;;
+  *Strip*)     format-strip-sentence ;;
+  *)           back_to show_main_menu ;;
+  esac
+}
+
+# ── Insert ───────────────────────────────────────────────────────────────────
+
+show_insert_menu() {
+  case $(menu "Insert" "  Snippet") in
+  *Snippet*) snippet-picker ;;
+  *)         back_to show_main_menu ;;
+  esac
+}
+
+# ── Hyprland ─────────────────────────────────────────────────────────────────
+
+show_hypr_menu() {
+  case $(menu "Hyprland" "  Edit My Config\n  Edit Omarchy Defaults\n  Cycle Float Size") in
+  *"My Config"*)  terminal bash -c "edit-hypr-config" ;;
+  *Defaults*)     terminal bash -c "edit-hypr-defaults" ;;
+  *"Float Size"*) float-cycle-size.sh ;;
+  *)              back_to show_main_menu ;;
+  esac
+}
+
+# ── Dots ─────────────────────────────────────────────────────────────────────
+
+show_dots_menu() {
+  case $(menu "Dotfiles" "  Sync Desktop Dots") in
+  *Sync*)  terminal bash -c "dotsync; read -p 'Press enter to close'" ;;
+  *)       back_to show_main_menu ;;
+  esac
+}
+
+# ── Main ─────────────────────────────────────────────────────────────────────
+
+show_main_menu() {
+  case $(menu "Bubba" "󰦨  Text\n  Insert\n  Hyprland\n  Dotfiles") in
+  *Text*)     show_text_menu ;;
+  *Insert*)   show_insert_menu ;;
+  *Hyprland*) show_hypr_menu ;;
+  *Dotfiles*) show_dots_menu ;;
+  esac
+}
+
+if [[ -n $1 ]]; then
+  BACK_TO_EXIT=true
+  show_main_menu
+else
+  show_main_menu
+fi
