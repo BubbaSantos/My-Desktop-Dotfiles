@@ -71,13 +71,13 @@ show_hypr_menu() {
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 show_main_menu() {
-  case $(menu "Mouse Menu" "  Text\n  Screenshot\n  Hyprland\n  Midas Log\n  Workflow\n  Sync Desktop Dots") in
-  *Text*)       show_text_menu ;;
-  *Screenshot*) show_screenshot_menu ;;
-  *Hyprland*)   show_hypr_menu ;;
+  case $(menu "Mouse Menu" "  Midas Log\n  Workflow\n  Sync Desktop Dots\n 󰉋 Text\n 󰉋 Screenshot\n 󰉋 Hyprland") in
   *"Midas Log"*) ~/.config/hypr/scripts/midas-log ;;
-  *Workflow*)   ~/.local/bin/workflow-work ;;
-  *"Sync"*)     terminal bash -c "dotsync; read -p 'Press enter to close'" ;;
+  *Workflow*)    ~/.local/bin/workflow-work ;;
+  *"Sync"*)      terminal bash -c "dotsync; read -p 'Press enter to close'" ;;
+  *Text*)        show_text_menu ;;
+  *Screenshot*)  show_screenshot_menu ;;
+  *Hyprland*)    show_hypr_menu ;;
   esac
 }
 
