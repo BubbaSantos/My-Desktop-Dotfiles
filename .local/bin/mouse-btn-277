@@ -1,0 +1,11 @@
+#!/bin/bash
+# ~/.local/bin/mouse-btn-277
+
+WINDOW=$(hyprctl activewindow -j)
+GROUP_COUNT=$(echo "$WINDOW" | jq '.grouped | length')
+
+if [ "$GROUP_COUNT" -gt 0 ]; then
+    hyprctl dispatch changegroupactive f
+else
+    ~/.local/bin/bubba-menu
+fi

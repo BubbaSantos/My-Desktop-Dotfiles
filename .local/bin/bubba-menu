@@ -27,120 +27,111 @@ terminal() {
   xdg-terminal-exec --app-id=org.omarchy.terminal "$@"
 }
 
-# ── Text formatting ──────────────────────────────────────────────────────────
+# ── Text & Insert ────────────────────────────────────────────────────────────
 
 show_text_menu() {
-  case $(menu "Format Text" "  Format Picker\n  Title Case\n  Sentence Case\n  Strip to Sentence") in
+  case $(menu "Text" "  ← Back\n  Format Picker\n  Title Case\n  Sentence Case\n  Strip to Sentence\n  Emoji\n  Snippet") in
+  *Back*)     show_main_menu ;;
   *Picker*)   terminal bash -c "text-format-picker" ;;
   *Title*)    format-title-case ;;
   *Sentence*) format-sentence-case ;;
   *Strip*)    format-strip-sentence ;;
-  *)          back_to show_main_menu ;;
-  esac
-}
-
-# ── Insert ───────────────────────────────────────────────────────────────────
-
-show_insert_menu() {
-  case $(menu "Insert" "󰞅  Emoji\n  Snippet") in
-  *Emoji*)   ~/.local/bin/jome-emoji-picker ;;
-  *Snippet*) snippet-picker ;;
-  *)         back_to show_main_menu ;;
+  *Emoji*)    ~/.local/bin/jome-emoji-picker ;;
+  *Snippet*)  snippet-picker ;;
   esac
 }
 
 # ── Screenshot ───────────────────────────────────────────────────────────────
 
 show_screenshot_menu() {
-  case $(menu "Screenshot" "  Fullscreen\n  Region\n  Window\n󰍉  Region to Lens") in
+  case $(menu "Screenshot" "  ← Back\n  Fullscreen\n  Region\n  Window\n  Region to Lens") in
+  *Back*)       show_main_menu ;;
   *Fullscreen*) ~/.local/bin/screenshot-fullscreen ;;
   *Region*)     ~/.local/bin/screenshot-region ;;
   *Window*)     ~/.local/bin/screenshot-window ;;
   *Lens*)       ~/.local/bin/region-to-lens ;;
-  *)            back_to show_main_menu ;;
   esac
 }
 
 # ── Webcam ───────────────────────────────────────────────────────────────────
 
 show_webcam_menu() {
-  case $(menu "Webcam" "  Open Cheese\n  Autofocus Toggle\n  Pan Left\n  Pan Right\n  Pan Up\n  Pan Down\n󰍉  Zoom In\n󰍉  Zoom Out\n  Focus Far\n  Focus Near") in
-  *Cheese*)            /usr/bin/cheese ;;
-  *Autofocus*)         ~/.local/bin/brio-cam.sh autofocus_toggle ;;
-  *"Pan Left"*)        ~/.local/bin/brio-cam.sh pan_left ;;
-  *"Pan Right"*)       ~/.local/bin/brio-cam.sh pan_right ;;
-  *"Pan Up"*)          ~/.local/bin/brio-cam.sh pan_up ;;
-  *"Pan Down"*)        ~/.local/bin/brio-cam.sh pan_down ;;
-  *"Zoom In"*)         ~/.local/bin/brio-cam.sh zoom_in ;;
-  *"Zoom Out"*)        ~/.local/bin/brio-cam.sh zoom_out ;;
-  *"Focus Far"*)       ~/.local/bin/brio-cam.sh focus_far ;;
-  *"Focus Near"*)      ~/.local/bin/brio-cam.sh focus_near ;;
-  *)                   back_to show_main_menu ;;
+  case $(menu "Webcam" "  ← Back\n  Open Cheese\n  Autofocus Toggle\n  Pan Left\n  Pan Right\n  Pan Up\n  Pan Down\n  Zoom In\n  Zoom Out\n  Focus Far\n  Focus Near") in
+  *Back*)         show_main_menu ;;
+  *Cheese*)       /usr/bin/cheese ;;
+  *Autofocus*)    ~/.local/bin/brio-cam.sh autofocus_toggle ;;
+  *"Pan Left"*)   ~/.local/bin/brio-cam.sh pan_left ;;
+  *"Pan Right"*)  ~/.local/bin/brio-cam.sh pan_right ;;
+  *"Pan Up"*)     ~/.local/bin/brio-cam.sh pan_up ;;
+  *"Pan Down"*)   ~/.local/bin/brio-cam.sh pan_down ;;
+  *"Zoom In"*)    ~/.local/bin/brio-cam.sh zoom_in ;;
+  *"Zoom Out"*)   ~/.local/bin/brio-cam.sh zoom_out ;;
+  *"Focus Far"*)  ~/.local/bin/brio-cam.sh focus_far ;;
+  *"Focus Near"*) ~/.local/bin/brio-cam.sh focus_near ;;
   esac
 }
 
 # ── Apps ─────────────────────────────────────────────────────────────────────
 
 show_apps_menu() {
-  case $(menu "Apps" "  Claude\n  ChatGPT\n  To Do\n  Notion\n  Outlook\n  Hotmail\n  Gmail\n  Teams\n  WhatsApp\n  Reddit\n  YouTube Music\n  Jellyfin\n  Patreon\n  FotMob\n  Remmina\n  LocalSend\n  Steam\n  YouTube\n  Keybr\n  Calculator\n  xpad\n  Sound Recorder") in
-  *Claude*)          firefoxpwa site launch 01KGTPV4ESC2A2XSRJF1QYEC7D ;;
-  *ChatGPT*)         chromium --app="https://chatgpt.com" ;;
-  *"To Do"*)         chromium --app="https://to-do.office.com/tasks/inbox" ;;
-  *Notion*)          ~/.config/hypr/scripts/toggle-notion.sh ;;
-  *Outlook*)         ~/.config/hypr/scripts/toggle-outlook.sh ;;
-  *Hotmail*)         ~/.local/bin/toggle-hotmail ;;
-  *Gmail*)           ~/.local/bin/toggle-gmail ;;
-  *Teams*)           ~/.config/hypr/scripts/toggle-teams-linux.sh ;;
-  *WhatsApp*)        ~/.config/hypr/scripts/whatsapp-toggle.sh ;;
-  *Reddit*)          ~/.config/hypr/scripts/toggle-reddit.sh ;;
-  *"YouTube Music"*) ~/.config/hypr/scripts/toggle-ytmusic.sh ;;
-  *Jellyfin*)        ~/.config/hypr/scripts/toggle-jellyfin.sh ;;
-  *Patreon*)         ~/.config/hypr/scripts/patreon-toggle ;;
-  *FotMob*)          ~/.config/hypr/scripts/toggle-fotmob.sh ;;
-  *Remmina*)         ~/.config/hypr/scripts/toggle-remmina.sh ;;
-  *LocalSend*)       localsend ;;
-  *Steam*)           steam ;;
-  *YouTube*)         ~/.config/hypr/scripts/youtube-toggle ;;
-  *Keybr*)           ~/.config/hypr/scripts/keybr-toggle.sh ;;
-  *Calculator*)      ~/.config/hypr/scripts/toggle-calculator.sh ;;
-  *xpad*)            xpad ;;
+  case $(menu "Apps" "  ← Back\n  Claude\n  ChatGPT\n  To Do\n  Notion\n  Outlook\n  Hotmail\n  Gmail\n  Teams\n  WhatsApp\n  Reddit\n  YouTube Music\n  Jellyfin\n  Patreon\n  FotMob\n  Remmina\n  LocalSend\n  Steam\n  YouTube\n  Keybr\n  Calculator\n  xpad\n  Sound Recorder") in
+  *Back*)             show_main_menu ;;
+  *Claude*)           $webapp="https://claude.ai/new" ;;
+  *ChatGPT*)          chromium --disable-features=WebRtcAllowInputVolumeAdjustment,AutomaticGainControl --app="https://chatgpt.com" ;;
+  *"To Do"*)          $webapp="https://to-do.office.com/tasks/inbox" ;;
+  *Notion*)           ~/.config/hypr/scripts/toggle-notion.sh ;;
+  *Outlook*)          ~/.config/hypr/scripts/toggle-outlook.sh ;;
+  *Hotmail*)          ~/.local/bin/toggle-hotmail ;;
+  *Gmail*)            ~/.local/bin/toggle-gmail ;;
+  *Teams*)            ~/.config/hypr/scripts/toggle-teams-linux.sh ;;
+  *WhatsApp*)         ~/.config/hypr/scripts/whatsapp-toggle.sh ;;
+  *Reddit*)           ~/.config/hypr/scripts/toggle-reddit.sh ;;
+  *"YouTube Music"*)  ~/.config/hypr/scripts/toggle-ytmusic.sh ;;
+  *Jellyfin*)         ~/.config/hypr/scripts/toggle-jellyfin.sh ;;
+  *Patreon*)          ~/.config/hypr/scripts/patreon-toggle ;;
+  *FotMob*)           ~/.config/hypr/scripts/toggle-fotmob.sh ;;
+  *Remmina*)          ~/.config/hypr/scripts/toggle-remmina.sh ;;
+  *LocalSend*)        localsend ;;
+  *Steam*)            steam ;;
+  *YouTube*)          ~/.config/hypr/scripts/youtube-toggle ;;
+  *Keybr*)            ~/.config/hypr/scripts/keybr-toggle.sh ;;
+  *Calculator*)       ~/.config/hypr/scripts/toggle-calculator.sh ;;
+  *xpad*)             xpad ;;
   *"Sound Recorder"*) gnome-sound-recorder ;;
-  *)                 back_to show_main_menu ;;
   esac
 }
 
 # ── Hyprland ─────────────────────────────────────────────────────────────────
 
 show_hypr_menu() {
-  case $(menu "Hyprland" "  Edit My Config\n  Edit Omarchy Defaults\n  Cycle Float Size\n  Midas Log\n  Work Workflow\n󰃟  Brightness Down\n󰃠  Brightness Up\n  Brightness Min\n  Brightness Max") in
-  *"My Config"*)      terminal bash -c "edit-hypr-config" ;;
-  *Defaults*)         terminal bash -c "edit-hypr-defaults" ;;
-  *"Float Size"*)     float-cycle-size.sh ;;
-  *"Midas Log"*)      ~/.config/hypr/scripts/midas-log ;;
-  *"Work Workflow"*)  ~/.local/bin/workflow-work ;;
+  case $(menu "Hyprland" "  ← Back\n  Edit My Config\n  Edit Omarchy Defaults\n  Cycle Float Size\n  Midas Log\n  Work Workflow\n  Brightness Down\n  Brightness Up\n  Brightness Min\n  Brightness Max") in
+  *Back*)              show_main_menu ;;
+  *"My Config"*)       terminal bash -c "edit-hypr-config" ;;
+  *Defaults*)          terminal bash -c "edit-hypr-defaults" ;;
+  *"Float Size"*)      float-cycle-size.sh ;;
+  *"Midas Log"*)       ~/.config/hypr/scripts/midas-log ;;
+  *"Work Workflow"*)   ~/.local/bin/workflow-work ;;
   *"Brightness Down"*) BRIGHTNESS_STEP=10 ~/.local/bin/monitor-brightness down ;;
   *"Brightness Up"*)   BRIGHTNESS_STEP=10 ~/.local/bin/monitor-brightness up ;;
   *"Brightness Min"*)  ~/.local/bin/monitor-brightness min ;;
   *"Brightness Max"*)  ~/.local/bin/monitor-brightness max ;;
-  *)                   back_to show_main_menu ;;
   esac
 }
 
 # ── Dots ─────────────────────────────────────────────────────────────────────
 
 show_dots_menu() {
-  case $(menu "Dotfiles" "  Sync Desktop Dots") in
-  *Sync*) terminal bash -c "dotsync; read -p 'Press enter to close'" ;;
-  *)      back_to show_main_menu ;;
+  case $(menu "Dotfiles" "  ← Back\n  Sync Desktop Dots") in
+  *Back*)  show_main_menu ;;
+  *Sync*)  terminal bash -c "dotsync; read -p 'Press enter to close'" ;;
   esac
 }
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 show_main_menu() {
-  case $(menu "Bubba" "󰦨  Text\n  Insert\n  Screenshot\n  Webcam\n  Apps\n  Hyprland\n  Dotfiles") in
+  case $(menu "Mouse Menu" "  Text\n  Screenshot\n  Webcam\n  Apps\n  Hyprland\n  Dotfiles") in
   *Text*)       show_text_menu ;;
-  *Insert*)     show_insert_menu ;;
   *Screenshot*) show_screenshot_menu ;;
   *Webcam*)     show_webcam_menu ;;
   *Apps*)       show_apps_menu ;;

@@ -1,0 +1,13 @@
+#!/bin/bash
+# ~/.local/bin/mouse-btn-276
+
+ACTIVE=$(hyprctl activewindow -j | jq -r '.class')
+
+case "$ACTIVE" in
+    "chrome-outlook.office.com__-Profile_1")
+        xdotool key ctrl+shift+2
+        ;;
+    *)
+        xdotool key alt+Right
+        ;;
+esac
