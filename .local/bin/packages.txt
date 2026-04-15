@@ -25,6 +25,7 @@ cava
 chatgpt-bin
 cheese
 chromium
+ckb-next
 clang
 claude-code
 claude-desktop-debug
@@ -204,6 +205,7 @@ slurp
 snapper
 socat
 sof-firmware
+solaar
 spotify
 starship
 steam
@@ -250,6 +252,7 @@ wireless-regdb
 wiremix
 wireplumber
 wl-clipboard
+wlrctl
 woff2-font-awesome
 wtype
 xdg-desktop-portal-gtk

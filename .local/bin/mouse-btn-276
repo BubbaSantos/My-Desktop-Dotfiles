@@ -1,13 +1,18 @@
 #!/bin/bash
 # ~/.local/bin/mouse-btn-276
 
-ACTIVE=$(hyprctl activewindow -j | jq -r '.class')
+CLASS=$(hyprctl activewindow -j | jq -r '.class')
+ADDRESS=$(hyprctl activewindow -j | jq -r '.address')
 
-case "$ACTIVE" in
+
+hyprctl dispatch focuswindow address:$ADDRESS
+sleep 0.1
+
+case "$CLASS" in
     "chrome-outlook.office.com__-Profile_1")
-        xdotool key ctrl+shift+2
+        wtype -M ctrl -M shift -k 2 -m ctrl -m shift
         ;;
     *)
-        xdotool key alt+Right
+        wtype -M alt -k Right -m alt
         ;;
 esac
