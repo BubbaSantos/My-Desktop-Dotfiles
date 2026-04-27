@@ -54,13 +54,13 @@ show_screenshot_menu() {
 }
 
 # ── Hyprland ─────────────────────────────────────────────────────────────────
-
 show_hypr_menu() {
-  case $(menu "Hyprland" "  ← Back\n  Edit My Config\n  Edit Omarchy Defaults\n  Cycle Float Size\n  Brightness Down\n  Brightness Up\n  Brightness Min\n  Brightness Max") in
+  case $(menu "Hyprland" "  ← Back\n  Edit My Config\n  Edit Omarchy Defaults\n  Cycle Float Size\n  Toggle Workspace Follow\n  Brightness Down\n  Brightness Up\n  Brightness Min\n  Brightness Max") in
   *Back*)              show_main_menu ;;
   *"My Config"*)       terminal bash -c "edit-hypr-config" ;;
   *Defaults*)          terminal bash -c "edit-hypr-defaults" ;;
   *"Float Size"*)      float-cycle-size.sh ;;
+  *"Workspace Follow"*) ~/.config/hypr/scripts/toggle-workspace-follow.sh ;;
   *"Brightness Down"*) BRIGHTNESS_STEP=10 ~/.local/bin/monitor-brightness down ;;
   *"Brightness Up"*)   BRIGHTNESS_STEP=10 ~/.local/bin/monitor-brightness up ;;
   *"Brightness Min"*)  ~/.local/bin/monitor-brightness min ;;

@@ -205,7 +205,8 @@
     "interval": 1,
     "nospacing": 1,
     "on-click": "cycle-format",
-    "on-click-right": "alacritty --class=Impala -e impala",
+    "on-click-right": "~/.config/waybar/scripts/toggle-ethernet.sh",
+    "on-click-middle": "alacritty --class=Impala -e impala",
     "format-alt": "{essid} {signalStrength}%"
   },
 

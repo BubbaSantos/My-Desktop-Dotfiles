@@ -53,3 +53,9 @@ border-color=#7ccf94
 background-color=#1a3a1aee
 text-color=#7ccf94
 default-timeout=2000
+
+[app-name=screenshot]
+border-color=#4a9eff
+background-color=#1a2a4aee
+text-color=#4a9eff
+default-timeout=3000

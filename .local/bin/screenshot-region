@@ -13,5 +13,5 @@ TITLE=$(hyprctl clients -j | jq -r --argjson rx "$RX" --argjson ry "$RY" '
 TITLE=${TITLE:-region}
 FILE=~/Pictures/Screenshots/region-${TITLE}-$(date +%s).png
 grim -g "$GEOM" - | tee "$FILE" | wl-copy
-ACTION=$(notify-send -A "default=Open in satty" "Screenshot" "Region saved + copied" --wait)
+ACTION=$(notify-send -a "screenshot" -A "default=Open in satty" "Screenshot" "Region saved + copied" --wait)
 [ "$ACTION" = "default" ] && satty -f "$FILE"

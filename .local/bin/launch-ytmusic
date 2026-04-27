@@ -1,0 +1,25 @@
+#!/bin/bash
+# ~/.local/bin/launch-ytmusic
+
+APP_CLASS="^chrome-music\.youtube\.com__-Profile_1$"
+FOCUSED_MON=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .id')
+
+if [ "$FOCUSED_MON" = "0" ]; then
+    SIZE="1214 1246"
+else
+    SIZE="637 737"
+fi
+
+# Check if already open - if so, just toggle
+if hyprctl clients -j | jq -e ".[] | select(.class | test(\"chrome-music.youtube.com\"))" > /dev/null 2>&1; then
+    hyprctl dispatch togglespecialworkspace ytmusic
+    exit 0
+fi
+
+# Launch and wait for window
+hyprctl dispatch exec "chromium --app=https://music.youtube.com --profile-directory='Profile 1'"
+sleep 1.5
+
+# Apply geometry
+hyprctl dispatch resizewindowpixel "exact $SIZE, class:$APP_CLASS"
+hyprctl dispatch centerwindow "class:$APP_CLASS"

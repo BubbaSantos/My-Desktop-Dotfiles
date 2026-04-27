@@ -25,7 +25,6 @@ cava
 chatgpt-bin
 cheese
 chromium
-ckb-next
 clang
 claude-code
 claude-desktop-debug
@@ -104,6 +103,7 @@ imagemagick
 impala
 imv
 inetutils
+input-remapper-git
 intel-ucode
 inxi
 iwd
@@ -169,6 +169,7 @@ omarchy-nvim
 omarchy-walker
 openbsd-netcat
 opencode
+openrazer-meta-git
 outlook-for-linux-bin
 pamixer
 pavucontrol

@@ -1,5 +1,5 @@
 #!/bin/bash
 FILE=~/Pictures/Screenshots/fullscreen-$(date +%s).png
 grim -o $(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name') - | tee "$FILE" | wl-copy
-ACTION=$(notify-send -A "default=Open in satty" "Screenshot" "Fullscreen saved + copied" --wait)
+ACTION=$(notify-send -a "screenshot" -A "default=Open in satty" "Screenshot" "Fullscreen saved + copied" --wait)
 [ "$ACTION" = "default" ] && satty -f "$FILE"

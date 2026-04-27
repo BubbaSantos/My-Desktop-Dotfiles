@@ -24,4 +24,4 @@ sleep 2
 wtype -M ctrl v -m ctrl
 
 # Notify
-notify-send "Screenshot" "Region sent to Google Lens"
+notify-send -a "screenshot" "Screenshot" "Region sent to Google Lens"
