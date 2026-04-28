@@ -53,6 +53,8 @@ efibootmgr
 egl-wayland
 etcher-bin
 evince
+evolution
+evolution-ews
 evremap-git
 evtest
 exfatprogs
@@ -112,6 +114,7 @@ jq
 kdenlive
 kernel-modules-hook
 keyd
+khal
 kitty
 kvantum-qt5
 lazydocker
@@ -240,6 +243,7 @@ ufw-docker
 unzip
 usage
 uwsm
+vdirsyncer
 ventoy-bin
 vivaldi
 voxtype-bin
