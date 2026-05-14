@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-SIZES="1696,1360 1291,1360 831,573"
+SIZES="1696,1360 1291,1360 751,423"
 STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/hypr-cycle-size"
 mkdir -p "$STATE_DIR"
 

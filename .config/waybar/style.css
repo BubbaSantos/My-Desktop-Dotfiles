@@ -1,5 +1,4 @@
 @import "colors.css";
-@import "/usr/lib/hyprwhspr/config/waybar/hyprwhspr-style.css";
 
 /*-----base styles----*/
 * {
@@ -74,7 +73,7 @@ window#waybar {
 /* cava */
 #custom-cava {
     padding: 1px 0px 1px 12px;
-    color: #b06285;
+    color: #e788b6;
     background-color: transparent;
     font-size: 6px;
     letter-spacing: -1px;
@@ -83,7 +82,7 @@ window#waybar {
 /* nowplaying */
 #custom-nowplaying {
     padding: 1px 10px 1px 1px;
-    color: #b06285;
+    color: #e788b6;
     background-color: transparent;
 }
 
@@ -94,7 +93,7 @@ window#waybar {
 }
 
 #custom-nowplaying.paused {
-    color: alpha(#b06285, 0.6);
+    color: alpha(#b06285, 0.9);
 }
 
 /* pulseaudio */

@@ -1,23 +1,18 @@
 #!/usr/bin/env bash
 # text-format-picker — format highlighted text via fzf TUI
-
 # Grab the previously focused window address before we steal focus
 PREV_WINDOW="$1"
-
 # Small delay to let clipboard settle
 sleep 0.1
-
 # Try primary selection first, fall back to regular clipboard
 INPUT="$(wl-paste --primary 2>/dev/null)"
 if [[ -z "$INPUT" ]]; then
   INPUT="$(wl-paste 2>/dev/null)"
 fi
-
 if [[ -z "$INPUT" ]]; then
   notify-send "Format Picker" "No text selected" -t 2000
   exit 1
 fi
-
 transform() {
   local mode="$1"
   local text="$2"
@@ -30,6 +25,14 @@ transform() {
       ;;
     "lower case")
       echo "${text,,}"
+      ;;
+    "lower case (no trailing period)")
+      echo "$text" | python3 -c "
+import sys
+text = sys.stdin.read().rstrip().lower()
+text = text.rstrip('.')
+print(text)
+"
       ;;
     "Sentence case")
       python3 -c "
@@ -101,11 +104,11 @@ print(text)
       ;;
   esac
 }
-
 FORMATS=(
   "Title Case"
   "UPPER CASE"
   "lower case"
+  "lower case (no trailing period)"
   "Sentence case"
   "camelCase"
   "PascalCase"
@@ -117,7 +120,6 @@ FORMATS=(
   "Trim Whitespace"
   "Reverse Words"
 )
-
 CHOICE=$(printf '%s\n' "${FORMATS[@]}" | fzf \
   --prompt="Format: " \
   --header="Input: $(echo "$INPUT" | head -c 60)…" \
@@ -128,18 +130,13 @@ CHOICE=$(printf '%s\n' "${FORMATS[@]}" | fzf \
   --no-sort \
   --bind="enter:accept" \
 )
-
 [[ -z "$CHOICE" ]] && exit 0
-
 RESULT=$(transform "$CHOICE" "$INPUT")
-
 # Copy to clipboard
 echo -n "$RESULT" | wl-copy
 echo -n "$RESULT" | wl-copy --primary
-
 # Refocus the previous window, then paste
 hyprctl dispatch focuswindow address:$PREV_WINDOW
 sleep 0.3
 wtype "$RESULT"
-
 notify-send "Format Picker" "$(echo "$RESULT" | head -c 80)" -t 2000

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# ~/.local/bin/format-strip-sentence-menu
+# Menu-launched variant: lowercase + strip trailing full stop
+# Targets the previously-focused window (not the currently-focused one,
+# which would be walker when launched from bubba-text-menu).
+
+# Find the most recently focused non-walker window
+PREV_ADDR=$(hyprctl clients -j | python3 -c "
+import sys, json
+clients = json.load(sys.stdin)
+# Filter out walker and unmapped windows, sort by focusHistoryID (lower = more recent)
+candidates = [c for c in clients if c.get('mapped') and 'walker' not in c.get('class', '').lower()]
+candidates.sort(key=lambda c: c.get('focusHistoryID', 999))
+if candidates:
+    print(candidates[0]['address'])
+")
+
+[[ -z "$PREV_ADDR" ]] && exit 1
+
+# Focus that window and give it a moment to actually receive focus
+hyprctl dispatch focuswindow address:$PREV_ADDR
+sleep 0.15
+
+# Select all and copy
+wtype -M ctrl -k a -m ctrl
+sleep 0.05
+wtype -M ctrl -k c -m ctrl
+sleep 0.25
+
+INPUT="$(wl-paste 2>/dev/null)"
+[[ -z "$INPUT" ]] && exit 1
+
+RESULT=$(echo "$INPUT" | python3 -c "
+import sys
+text = sys.stdin.read().strip()
+text = text.rstrip('.')
+text = text.lower()
+print(text, end='')
+")
+
+echo -n "$RESULT" | wl-copy
+wtype "$RESULT"

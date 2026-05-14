@@ -1,11 +1,41 @@
 #!/bin/bash
 # ~/.local/bin/mouse-btn-277
 
-WINDOW=$(hyprctl activewindow -j)
-GROUP_COUNT=$(echo "$WINDOW" | jq '.grouped | length')
+STATE_FILE=/tmp/mouse-btn-277.state
+HOLD_THRESHOLD=0.5  # seconds; tweak to taste
 
-if [ "$GROUP_COUNT" -gt 0 ]; then
-    hyprctl dispatch changegroupactive f
-else
-    ~/.local/bin/bubba-menu
-fi
+case "$1" in
+    press)
+        # Record the press time
+        date +%s.%N > "$STATE_FILE"
+        ;;
+    release)
+        # Calculate how long it was held
+        if [ ! -f "$STATE_FILE" ]; then
+            exit 0
+        fi
+        PRESS_TIME=$(cat "$STATE_FILE")
+        RELEASE_TIME=$(date +%s.%N)
+        HELD=$(echo "$RELEASE_TIME - $PRESS_TIME" | bc)
+        rm -f "$STATE_FILE"
+
+        # Long press → mouse menu
+        if (( $(echo "$HELD >= $HOLD_THRESHOLD" | bc -l) )); then
+            ~/.local/bin/bubba-text-menu
+            exit 0
+        fi
+
+        # Short press → existing behaviour
+        WINDOW=$(hyprctl activewindow -j)
+        CLASS=$(echo "$WINDOW" | jq -r '.class')
+        GROUP_COUNT=$(echo "$WINDOW" | jq '.grouped | length')
+
+        if [ "$CLASS" = "vivaldi-stable" ] || [ "$CLASS" = "Vivaldi-stable" ]; then
+            wtype -M alt -P q -p q -m alt
+            sleep 0.1
+            wtype -k Return
+        elif [ "$GROUP_COUNT" -gt 0 ]; then
+            hyprctl dispatch changegroupactive f
+        fi
+        ;;
+esac

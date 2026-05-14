@@ -1,0 +1,26 @@
+#!/bin/bash
+# ~/.local/bin/bubba-text-menu
+# Text formatting & insert launcher — follows Omarchy menu conventions
+export PATH="$HOME/.local/bin:$HOME/.local/share/omarchy/bin:$PATH"
+
+menu() {
+  local prompt="$1"
+  local options="$2"
+  echo -e "$options" | omarchy-launch-walker --dmenu --width 295 --minheight 1 --maxheight 630 -p "$prompt…" 2>/dev/null
+}
+
+terminal() {
+  xdg-terminal-exec --app-id=org.omarchy.terminal "$@"
+}
+
+show_main_menu() {
+  case $(menu "Text" "  Format Picker\n  Title Case\n  Sentence Case\n  Strip to Sentence\n  Emoji\n  Snippet") in
+  *Picker*)   terminal bash -c "text-format-picker" ;;
+  *Title*)    format-title-case ;;
+  *Sentence*) format-sentence-case ;;
+  *Emoji*)    ~/.local/bin/jome-emoji-picker ;;
+  *Snippet*)  snippet-picker ;;
+  esac
+}
+
+show_main_menu

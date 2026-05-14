@@ -20,6 +20,8 @@
 <Multi_key> <x> <c> <o> <m> <space> : "nvim /home/bubba/.XCompose"
 <Multi_key> <c> <s> <s> <space> : "nvim /home/bubba/.config/waybar/style-template.css"
 <Multi_key> <j> <s> <o> <n> <space> : "nvim /home/bubba/.config/waybar/config.jsonc"
+<Multi_key> <c> <l> <space> : "!! | wl-copy"
+
 
 
 ####################################
@@ -29,6 +31,7 @@
 <Multi_key> <m> <a> <b> <space> : "Mortgage Advice Bureau"
 <Multi_key> <m> <a> <b> <p> <space> : "Mortgage Advice Bureau - Protection"
 <Multi_key> <r> <l> <space> : "Royal London"
+<Multi_key> <a> <space> : "Aviva"
 
 
 ####################################
@@ -53,6 +56,12 @@
 <Multi_key> <m> <t> <space> : "Many Thanks,"
 <Multi_key> <t> <f> <y> <t> <space> : "Thanks very much for your time today, it was good speaking with you."
 <Multi_key> <i> <w> <c> <space> : " I will call you on"
+<Multi_key> <r> <space> : "Recommendation"
+<Multi_key> <e> <c> <space> : "Existing Cover"
+<Multi_key> <n> <s> <space> : "Next Steps"
+
+
+
 
 
 ####################################

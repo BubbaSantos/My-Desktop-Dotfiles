@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Paste via Omarchy's universal Super+V binding, then release modifiers
+
+sleep 0.05
+
+# Press and release Super+V explicitly
+wtype -M logo -P v -p v -m logo
+
+# Belt-and-braces: explicitly release Super in case it's stuck
+wtype -k Super_L 2>/dev/null
+wtype -k Super_R 2>/dev/null

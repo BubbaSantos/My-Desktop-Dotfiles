@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 INPUT="$1"
 MODE="$2"
-
 case "$MODE" in
   "Title Case")    echo "$INPUT" | python3 -c "import sys; print(sys.stdin.read().title().rstrip())" ;;
   "UPPER CASE")    echo "${INPUT^^}" ;;
   "lower case")    echo "${INPUT,,}" ;;
+  "lower case (no trailing period)") echo "$INPUT" | python3 -c "
+import sys
+text = sys.stdin.read().rstrip().lower()
+text = text.rstrip('.')
+print(text)
+" ;;
   "Sentence case") python3 -c "
 import sys
 text = sys.stdin.read().rstrip()

@@ -48,3 +48,8 @@ if [ -n "$ADDRESS" ]; then
     hyprctl dispatch movetoworkspacesilent "3,address:$ADDRESS"
 fi
 notify-send "Work Workflow" "Applications launched" -t 3000
+# Move Notion to workspace 11
+NOTION_ADDR=$(hyprctl clients -j | jq -r '.[] | select(.class | startswith("chrome-") and contains("notion.so")) | .address' | head -1)
+if [ -n "$NOTION_ADDR" ]; then
+    hyprctl dispatch movetoworkspacesilent "11,address:$NOTION_ADDR"
+fi

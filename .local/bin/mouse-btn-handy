@@ -1,0 +1,28 @@
+#!/bin/bash
+# ~/.local/bin/mouse-btn-handy
+
+STATE_FILE=/tmp/mouse-btn-handy.state
+HOLD_THRESHOLD=0.5
+
+case "$1" in
+    press)
+        date +%s.%N > "$STATE_FILE"
+        ;;
+    release)
+        if [ ! -f "$STATE_FILE" ]; then
+            exit 0
+        fi
+        PRESS_TIME=$(cat "$STATE_FILE")
+        RELEASE_TIME=$(date +%s.%N)
+        HELD=$(echo "$RELEASE_TIME - $PRESS_TIME" | bc)
+        rm -f "$STATE_FILE"
+
+        if (( $(echo "$HELD >= $HOLD_THRESHOLD" | bc -l) )); then
+            notify-send -a handy -t 2000 "Handy" "AI post-processing"
+            handy --toggle-post-process
+        else
+            notify-send -a handy -t 2000 "Handy" "Dictation"
+            pkill -USR2 -x handy
+        fi
+        ;;
+esac

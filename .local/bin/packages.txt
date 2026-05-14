@@ -11,6 +11,7 @@ base-devel
 bash-completion
 bat
 bc
+betterbird-bin
 bibata-cursor-theme
 bitwarden
 blender
@@ -21,6 +22,7 @@ brightnessctl
 btop
 btrfs-progs
 calibre
+caligula
 cava
 chatgpt-bin
 cheese
@@ -28,6 +30,7 @@ chromium
 clang
 claude-code
 claude-desktop-debug
+cliamp
 clipse
 cmatrix
 cuda
@@ -41,6 +44,7 @@ ddcutil
 ddcutil-service
 discord
 dmenu
+dnsmasq
 docker
 docker-buildx
 docker-compose
@@ -49,6 +53,7 @@ dotool
 downgrade
 dropbox
 dust
+edk2-ovmf
 efibootmgr
 egl-wayland
 etcher-bin
@@ -72,6 +77,7 @@ ffmpegthumbnailer
 firefox
 firefoxpwa
 fontconfig
+freecad
 freerdp
 fzf
 ghostty
@@ -100,7 +106,6 @@ hyprland-preview-share-picker
 hyprlock
 hyprpicker
 hyprsunset
-hyprwhspr
 imagemagick
 impala
 imv
@@ -139,7 +144,6 @@ llvm
 localsend
 love
 luarocks
-makima-bin
 mako
 man-db
 mariadb-libs
@@ -173,7 +177,7 @@ omarchy-walker
 openbsd-netcat
 opencode
 openrazer-meta-git
-outlook-for-linux-bin
+openscad
 pamixer
 pavucontrol
 pinta
@@ -194,6 +198,7 @@ python-pip
 python-poetry-core
 python-terminaltexteffects
 qbittorrent
+qemu-full
 qt5-wayland
 qt6-wayland
 remmina
@@ -217,9 +222,13 @@ sunshine
 sushi
 swaybg
 swayosd
+swtpm
 sxiv
 system-config-printer
 teams-for-linux-bin
+tesseract
+tesseract-data-eng
+thunderbird
 timeshift
 tldr
 tmux
@@ -245,6 +254,7 @@ usage
 uwsm
 vdirsyncer
 ventoy-bin
+virt-manager
 vivaldi
 voxtype-bin
 vscodium

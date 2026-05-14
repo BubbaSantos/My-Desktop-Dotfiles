@@ -1,0 +1,8 @@
+#!/bin/bash
+if pgrep -x waybar >/dev/null; then
+  pkill -9 -f "cava.sh" 2>/dev/null
+  pkill -9 cava 2>/dev/null
+  killall -9 waybar
+else
+  ~/.config/waybar/refresh-bars.sh
+fi
