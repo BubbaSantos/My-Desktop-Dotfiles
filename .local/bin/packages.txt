@@ -32,6 +32,7 @@ claude-code
 claude-desktop-debug
 cliamp
 clipse
+cmake
 cmatrix
 cuda
 cups

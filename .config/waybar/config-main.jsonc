@@ -14,7 +14,8 @@
     "pulseaudio"
   ],
   "modules-center": [
-    "hyprland/workspaces"
+    "hyprland/workspaces",
+    "custom/fullscreen"
   ],
   "modules-right": [
     "group/tray-expander",
@@ -127,6 +128,13 @@
   "tooltip": false,
   "on-click-right": "makoctl dismiss --all"
 },
+
+  "custom/fullscreen": {
+    "exec": "~/.local/bin/waybar-fullscreen-status",
+    "return-type": "json",
+    "format": "{}"
+  },
+  
   // ============================================================================
   // RIGHT MODULES
   // ============================================================================

@@ -1,0 +1,16 @@
+#!/bin/bash
+config="$HOME/.config/hypr/looknfeel.conf"
+
+# Detect current layout from the general {} block
+current_layout=$(sed -n '/^general {/,/^}/ s/^[[:space:]]*layout[[:space:]]*=[[:space:]]*//p' "$config")
+
+# Flip it
+if [[ "$current_layout" == "master" ]]; then
+    new_layout="dwindle"
+else
+    new_layout="master"
+fi
+
+sed -i '/^general {/,/^}/ s/^\([[:space:]]*\)layout[[:space:]]*=.*/\1layout = '"$new_layout"'/' "$config"
+notify-send "Hyprland Layout" "Switched to $new_layout" -u low
+hyprctl reload

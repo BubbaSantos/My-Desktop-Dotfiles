@@ -188,6 +188,19 @@ window#waybar {
     transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
+#custom-fullscreen.active {
+  background-color: #a3be8c;
+  color: #2e3440;
+  padding: 0 10px;
+  margin: 2px 4px;
+  border-radius: 8px;
+}
+
+#custom-fullscreen.inactive {
+  padding: 0;
+  margin: 0;
+}
+
 /*-----RIGHT MODULES----*/
 /* tray expander group */
 #custom-expand-icon {
