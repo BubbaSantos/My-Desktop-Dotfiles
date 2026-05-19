@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+# date-duration — styled TUI date duration calculator
+
+set -euo pipefail
+
+C_ACCENT=$'\e[38;5;215m'
+C_LABEL=$'\e[38;5;110m'
+C_DIM=$'\e[38;5;245m'
+C_BOLD=$'\e[1m'
+C_RESET=$'\e[0m'
+
+BAR="${C_DIM}│${C_RESET}"   # left rule, like the snippet picker
+
+parse_date() {
+    local in="$1"
+    # accept DD/MM/YYYY, DD.MM.YYYY, or DD-MM-YYYY
+    [[ "$in" =~ ^([0-9]{1,2})[./-]([0-9]{1,2})[./-]([0-9]{4})$ ]] || return 1
+    local d="${BASH_REMATCH[1]}" m="${BASH_REMATCH[2]}" y="${BASH_REMATCH[3]}"
+    date -d "${y}-${m}-${d}" +%Y-%m-%d 2>/dev/null || return 1
+}
+
+# group an integer with commas, locale-independent
+commafy() {
+    local n="$1" out=""
+    while (( ${#n} > 3 )); do
+        out=",${n: -3}${out}"
+        n="${n:0:${#n}-3}"
+    done
+    printf '%s%s' "$n" "$out"
+}
+
+# a single content line with the left accent bar
+line()    { printf '  %s  %s%s%s\n' "$BAR" "${2:-}" "$1" "$C_RESET"; }
+heading() { printf '  %s  %s%s%s\n' "$BAR" "$C_DIM" "$1" "$C_RESET"; }
+blank()   { printf '  %s\n' "$BAR"; }
+
+calc() {
+    local s="$1" e="$2"
+    local s_epoch e_epoch days
+    s_epoch="$(date -d "$s" +%s)"
+    e_epoch="$(date -d "$e" +%s)"
+    days=$(( (e_epoch - s_epoch) / 86400 ))
+
+    local abs=${days#-} lo hi
+    if (( s_epoch <= e_epoch )); then lo="$s"; hi="$e"; else lo="$e"; hi="$s"; fi
+
+    local y1 m1 d1 y2 m2 d2 yy mm dd
+    y1=$(date -d "$lo" +%Y); m1=$(date -d "$lo" +%-m); d1=$(date -d "$lo" +%-d)
+    y2=$(date -d "$hi" +%Y); m2=$(date -d "$hi" +%-m); d2=$(date -d "$hi" +%-d)
+    dd=$(( d2 - d1 )); mm=$(( m2 - m1 )); yy=$(( y2 - y1 ))
+    if (( dd < 0 )); then
+        local pm=$(( m2 - 1 )) py=$y2 dim
+        (( pm == 0 )) && { pm=12; py=$(( py - 1 )); }
+        dim=$(date -d "$(printf '%04d-%02d-01 +1 month -1 day' "$py" "$pm")" +%-d)
+        dd=$(( dd + dim )); mm=$(( mm - 1 ))
+    fi
+    if (( mm < 0 )); then mm=$(( mm + 12 )); yy=$(( yy - 1 )); fi
+    local total_months=$(( yy * 12 + mm ))
+
+    local sign=""
+    (( days < 0 )) && sign="-"
+
+    printf '\n'
+    line "From  $(date -d "$s" '+%a %-d %b %Y')" "$C_LABEL"
+    line "To    $(date -d "$e" '+%a %-d %b %Y')" "$C_LABEL"
+    blank
+    line "${sign}${abs} days" "$C_BOLD$C_ACCENT"
+    line "$(printf '%d years, %d months, %d days' "$yy" "$mm" "$dd")" "$C_DIM"
+    line "$(printf '%d months, %d days' "$total_months" "$dd")" "$C_DIM"
+    blank
+    line "$(commafy $(( abs * 86400 ))) seconds" "$C_LABEL"
+    line "$(commafy $(( abs * 1440  ))) minutes" "$C_LABEL"
+    line "$(commafy $(( abs * 24    ))) hours"   "$C_LABEL"
+    line "$(printf '%d weeks, %d days' $(( abs / 7 )) $(( abs % 7 )))" "$C_LABEL"
+    printf '\n'
+}
+
+# styled input prompt with the same left bar
+ask() {
+    local label="$1" hint="$2" input
+    printf '\n'
+    line "$label" "$C_LABEL"
+    heading "$hint"
+    blank
+    printf '  %s  %s›%s ' "$BAR" "$C_LABEL" "$C_RESET"
+    read -r input
+    REPLY_DATE="$input"
+}
+
+START="$(date +%Y-%m-%d)"
+
+while true; do
+    clear
+    printf '%s%s  Date Duration%s\n\n' "$C_BOLD" "$C_ACCENT" "$C_RESET"
+    printf '  %sStart date%s  %s%s%s\n' \
+        "$C_LABEL" "$C_RESET" "$C_BOLD" "$(date -d "$START" '+%a %-d %b %Y')" "$C_RESET"
+
+    ask 'Enter a date to calculate to' \
+        'DD/MM/YYYY   blank=today   s=start   q=quit'
+    input="$REPLY_DATE"
+
+    case "$input" in
+        q) break ;;
+        s)
+            ask 'Set the start date' 'DD/MM/YYYY or DD.MM.YYYY   blank=today'
+            if [[ -z "$REPLY_DATE" ]]; then
+                START="$(date +%Y-%m-%d)"
+            elif new="$(parse_date "$REPLY_DATE")"; then
+                START="$new"
+            else
+                printf '\n  %sinvalid date%s\n' "$C_ACCENT" "$C_RESET"
+                read -rsn1 -p $'\n  press any key…'
+            fi
+            continue
+            ;;
+        "")  end="$(date +%Y-%m-%d)" ;;
+        *)
+            if ! end="$(parse_date "$input")"; then
+                printf '\n  %sinvalid date — use DD/MM/YYYY or DD.MM.YYYY%s\n' \
+                    "$C_ACCENT" "$C_RESET"
+                read -rsn1 -p $'\n  press any key…'
+                continue
+            fi
+            ;;
+    esac
+
+    calc "$START" "$end"
+    read -rsn1 -p $'  press any key for another…'
+done
+
+clear
