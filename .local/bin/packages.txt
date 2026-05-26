@@ -255,6 +255,7 @@ ufw-docker
 unzip
 usage
 uwsm
+uxplay
 vdirsyncer
 ventoy-bin
 virt-manager

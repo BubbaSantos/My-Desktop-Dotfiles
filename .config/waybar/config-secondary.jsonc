@@ -54,7 +54,7 @@
   "pulseaudio": {
     "format": "{volume}% {icon}",
     "on-click": "~/.config/hypr/scripts/toggle-ytmusic.sh",
-    "on-click-middle": "~/.config/hypr/scripts/toggle-ytmusic.sh",
+    "on-click-middle": "~/.config/hypr/scripts/toggle-ytmusic.sh secondary",
     "on-click-right": "ghostty -e wiremix",
     "tooltip-format": "Playing at {volume}%",
     "on-scroll-up": "~/.config/waybar/scripts/volume-default-sink.sh 2 up",

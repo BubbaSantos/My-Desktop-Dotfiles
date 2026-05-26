@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Get current opacity from hyprctl
+CURRENT_ACTIVE=$(hyprctl getoption decoration:active_opacity -j | jq -r '.float')
+CURRENT_INACTIVE=$(hyprctl getoption decoration:inactive_opacity -j | jq -r '.float')
+
+# Build preset list with current shown in the header
+PRESETS=$(cat <<EOF
+1.0
+0.95
+0.9
+0.85
+0.8
+0.75
+0.7
+0.6
+0.5
+0.4
+0.3
+EOF
+)
+
+HEADER=$(printf "Active: %s | Inactive: %s\nType a value (0.0–1.0) or pick a preset" "$CURRENT_ACTIVE" "$CURRENT_INACTIVE")
+
+SELECTION=$(echo "$PRESETS" | fzf \
+    --prompt="Set opacity > " \
+    --header="$HEADER" \
+    --print-query \
+    --height=40% \
+    --border \
+    --reverse \
+    | tail -n1)
+
+# Exit if nothing chosen
+[[ -z "$SELECTION" ]] && exit 0
+
+# Validate: must be a number between 0.0 and 1.0
+if ! [[ "$SELECTION" =~ ^0(\.[0-9]+)?$|^1(\.0+)?$ ]]; then
+    notify-send -t 2000 "Opacity" "Invalid value: $SELECTION"
+    exit 1
+fi
+
+hyprctl keyword decoration:active_opacity "$SELECTION"
+hyprctl keyword decoration:inactive_opacity "$SELECTION"
+
+notify-send -t 2000 "Opacity Set" "Active: $SELECTION | Inactive: $SELECTION"

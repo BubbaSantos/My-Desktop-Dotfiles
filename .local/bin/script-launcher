@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIRS=(
+    "$HOME/.local/bin"
+    "$HOME/.config/hypr/scripts"
+)
+
+declare -A CONFIGS=(
+    ["hyprland"]="nvim /home/bubba/.config/hypr"
+    ["hyprland-defaults"]="nvim /home/bubba/.local/share/omarchy/default/hypr"
+    ["waybar"]="nvim /home/bubba/.config/waybar"
+    ["mako"]="nvim /home/bubba/.config/mako/config"
+    ["bashrc"]="nvim /home/bubba/.bashrc"
+    ["xcompose"]="nvim /home/bubba/.XCompose"
+    ["snippet-picker"]="nvim /home/bubba/.config/snippets/work-snippets.txt"
+)
+
+open_config() {
+    eval "$1"
+}
+
+pick_script() {
+    while true; do
+        declare -A script_map
+
+        for dir in "${SCRIPT_DIRS[@]}"; do
+            [[ -d "$dir" ]] || continue
+            while IFS= read -r -d '' file; do
+                name=$(basename "$file")
+                [[ -z "${script_map[$name]}" ]] && script_map[$name]="$file"
+            done < <(find "$dir" -maxdepth 1 -type f -executable -print0)
+        done
+
+        chosen=$(printf '%s\n' "${!script_map[@]}" | sort | fzf --prompt="Script > " --height=40% --border --layout=reverse)
+        [[ -z "$chosen" ]] && return
+
+        chosen_path="${script_map[$chosen]}"
+
+        action=$(printf 'Run\nEdit' | fzf --prompt="$chosen > " --height=40% --border --layout=reverse)
+        [[ -z "$action" ]] && continue
+
+        case "$action" in
+            Run)  "$chosen_path" ;;
+            Edit) nvim "$chosen_path" ;;
+        esac
+    done
+}
+
+pick_config() {
+    while true; do
+        chosen=$(printf '%s\n' "${!CONFIGS[@]}" | sort | fzf --prompt="Config > " --height=40% --border --layout=reverse)
+        [[ -z "$chosen" ]] && return
+
+        open_config "${CONFIGS[$chosen]}"
+    done
+}
+
+while true; do
+    mode=$(printf 'Scripts\nConfigs' | fzf --prompt="Launcher > " --height=40% --border --layout=reverse)
+    [[ -z "$mode" ]] && exit 0
+
+    case "$mode" in
+        Scripts) pick_script ;;
+        Configs) pick_config ;;
+    esac
+done

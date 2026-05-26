@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Get window info and generate a Hyprland window rule
+# Usage:
+#   hypr-window-info                  # interactive TUI on active window
+#   hypr-window-info --addr 0xABC     # interactive TUI on specific window
+#   hypr-window-info rule             # print rule (exact coords) for active window
+#   hypr-window-info rule center      # print rule (center on) for active window
+
+set -euo pipefail
+
+mode="tui"
+target_addr=""
+positioning="move"
+
+# Parse args
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --addr) target_addr="$2"; shift 2 ;;
+        rule) mode="rule"; shift; positioning="${1:-move}"; break ;;
+        *) shift ;;
+    esac
+done
+
+# Debug logging
+LOG=/tmp/hypr-window-info.log
+{
+    echo "=== $(date) ==="
+    echo "target_addr arg: '$target_addr'"
+} >> "$LOG"
+
+# Fetch the target window
+if [[ -n "$target_addr" ]] && [[ "$target_addr" != "null" ]]; then
+    win=$(hyprctl -j clients | jq --arg a "$target_addr" '.[] | select(.address == $a)')
+else
+    win=$(hyprctl -j activewindow)
+fi
+
+echo "win: $win" >> "$LOG"
+
+if [[ -z "$win" ]] || [[ "$win" == "null" ]] || [[ "$win" == "{}" ]]; then
+    notify-send "hypr-window-info" "No target window found"
+    exit 1
+fi
+
+class=$(echo "$win" | jq -r '.class')
+title=$(echo "$win" | jq -r '.title')
+initial_class=$(echo "$win" | jq -r '.initialClass')
+gx=$(echo "$win" | jq -r '.at[0]')
+gy=$(echo "$win" | jq -r '.at[1]')
+w=$(echo "$win" | jq -r '.size[0]')
+h=$(echo "$win" | jq -r '.size[1]')
+mon_id=$(echo "$win" | jq -r '.monitor')
+floating=$(echo "$win" | jq -r '.floating')
+pinned=$(echo "$win" | jq -r '.pinned')
+
+# Fall back to initialClass if class is empty
+if [[ -z "$class" ]] || [[ "$class" == "null" ]]; then
+    class="$initial_class"
+fi
+
+mon=$(hyprctl -j monitors | jq --argjson id "$mon_id" '.[] | select(.id == $id)')
+mon_name=$(echo "$mon" | jq -r '.name')
+mx=$(echo "$mon" | jq -r '.x')
+my=$(echo "$mon" | jq -r '.y')
+
+rel_x=$((gx - mx))
+rel_y=$((gy - my))
+
+# Regex-escape helper
+escape_re() {
+    echo "$1" | sed 's/[][\\.*^$()+?{|]/\\&/g'
+}
+
+class_re=$(escape_re "$class")
+title_re=$(escape_re "$title")
+
+build_rule() {
+    local pos="$1"
+    local parts=()
+    [[ "$floating" == "true" ]] && parts+=("float on")
+    parts+=("size $w $h")
+    if [[ "$floating" == "true" ]]; then
+        if [[ "$pos" == "center" ]]; then
+            parts+=("center on")
+        else
+            parts+=("move $rel_x $rel_y")
+        fi
+    fi
+    [[ "$mon_id" != "0" ]] && parts+=("monitor $mon_id")
+    [[ "$pinned" == "true" ]] && parts+=("pin on")
+    local body
+    body=$(IFS=', '; echo "${parts[*]}")
+
+    # If class is empty, match on title instead
+    if [[ -z "$class" ]] || [[ "$class" == "null" ]]; then
+        echo "windowrule = match:title ^${title_re}$, ${body}"
+    else
+        echo "windowrule = match:class ^${class_re}$, ${body}"
+    fi
+}
+
+if [[ "$mode" == "rule" ]]; then
+    build_rule "$positioning"
+    exit 0
+fi
+
+# Interactive TUI
+rule_move=$(build_rule "move")
+rule_center=$(build_rule "center")
+
+# Display identifier for the header — class if available, else title
+display_id="${class:-$title}"
+
+menu=$(printf "%s\n%s" \
+    "Exact position  │ $rule_move" \
+    "Center on       │ $rule_center")
+
+choice=$(echo "$menu" | fzf \
+    --prompt="Positioning? " \
+    --header="$display_id — ${w}x${h} on $mon_name" \
+    --delimiter='│' \
+    --with-nth=1 \
+    --preview='echo {2}' \
+    --preview-window=down:3:wrap \
+    --height=40% \
+    --border)
+
+[[ -z "$choice" ]] && exit 0
+
+rule=$(echo "$choice" | awk -F'│' '{print $2}' | sed 's/^ *//')
+echo "$rule" | wl-copy
+notify-send "Window Rule Copied" "$rule"
