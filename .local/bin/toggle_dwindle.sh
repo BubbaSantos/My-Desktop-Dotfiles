@@ -25,11 +25,11 @@ set_ratio() {
 
     if [[ "$value" == "1.0" ]]; then
         echo "1.0" > "$RATIO_FILE"
-        notify-send "Dwindle Layout" "Split ratio 50/50" -u low
+        notify-send -a "Dwindle Layout" "Dwindle Layout" "Split ratio 50/50" -u low
     else
         sed -i "/^dwindle {/a\\    force_split = 2\n    default_split_ratio = $value" "$config"
         echo "$value" > "$RATIO_FILE"
-        notify-send "Dwindle Layout" "Split ratio $choice" -u low
+        notify-send -a "Dwindle Layout" "Dwindle Layout" "Split ratio $choice" -u low
     fi
     hyprctl reload
 }

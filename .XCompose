@@ -44,6 +44,7 @@
 <Multi_key> <i> <p> <space> : "Income Protection"
 <Multi_key> <t> <p> <d> <space> : "Total Permanent Disability"
 <Multi_key> <w> <o> <p> <space> : "Waiver of Premium"
+<Multi_key> <l> <c> <space> : "Life & Critical Illness Cover"
 
 
 
@@ -59,6 +60,7 @@
 <Multi_key> <r> <space> : "Recommendation"
 <Multi_key> <e> <c> <space> : "Existing Cover"
 <Multi_key> <n> <s> <space> : "Next Steps"
+<Multi_key> <d> <c> <space> : "Diary Closed"
 
 
 

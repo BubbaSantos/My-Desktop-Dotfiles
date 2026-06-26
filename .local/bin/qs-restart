@@ -1,0 +1,4 @@
+#!/bin/bash
+pkill -x qs
+sleep 1
+qs -c "QuickShell Bar" &

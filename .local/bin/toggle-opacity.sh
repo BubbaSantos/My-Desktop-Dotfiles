@@ -44,4 +44,4 @@ hyprctl keyword decoration:inactive_opacity "$INACTIVE_OPACITY"
 echo "$NEXT_STATE" > "$STATE_FILE"
 
 # Send notification
-notify-send -t 2000 "Opacity Level" "$LEVEL_NAME\nActive: $ACTIVE_OPACITY | Inactive: $INACTIVE_OPACITY"
+notify-send -a "Opacity Toggle" -t 2000 "Opacity Level" "$LEVEL_NAME\nActive: $ACTIVE_OPACITY | Inactive: $INACTIVE_OPACITY"

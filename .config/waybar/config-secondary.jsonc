@@ -31,7 +31,7 @@
     "tooltip": false,
     "on-click": "playerctl play-pause",
     "on-click-right": "playerctl next",
-    "on-click-middle": "~/.config/hypr/scripts/toggle-ytmusic.sh",
+    "on-click-middle": "~/.local/bin/toggle-ytmusic.sh",
     "on-scroll-up": "pamixer -i 2",
     "on-scroll-down": "pamixer -d 2",
     "restart-interval": 0
@@ -44,7 +44,7 @@
   "exec": "~/.config/waybar/scripts/nowplaying-2.sh",
   "on-click": "playerctl play-pause",
   "on-click-right": "playerctl next",
-  "on-click-middle": "~/.config/hypr/scripts/toggle-ytmusic.sh",
+  "on-click-middle": "~/.local/bin/toggle-ytmusic.sh",
   "on-scroll-up": "pamixer -i 2",
   "on-scroll-down": "pamixer -d 2",
   "tooltip": true,
@@ -53,8 +53,8 @@
 
   "pulseaudio": {
     "format": "{volume}% {icon}",
-    "on-click": "~/.config/hypr/scripts/toggle-ytmusic.sh",
-    "on-click-middle": "~/.config/hypr/scripts/toggle-ytmusic.sh secondary",
+    "on-click": "~/.local/bin/toggle-ytmusic.sh",
+    "on-click-middle": "~/.local/bin/toggle-ytmusic.sh secondary",
     "on-click-right": "ghostty -e wiremix",
     "tooltip-format": "Playing at {volume}%",
     "on-scroll-up": "~/.config/waybar/scripts/volume-default-sink.sh 2 up",

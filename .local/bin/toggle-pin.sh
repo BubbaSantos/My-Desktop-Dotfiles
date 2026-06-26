@@ -8,8 +8,8 @@ is_pinned=$(hyprctl activewindow -j | jq -r '.pinned')
 
 if [ "$is_pinned" = "true" ]; then
     hyprctl dispatch pin
-    notify-send "Window Unpinned"
+    notify-send -a "Hyprland" "Window Unpinned"
 else
     hyprctl dispatch pin
-    notify-send "Window Pinned"
+    notify-send -a "Hyprland" "Window Pinned"
 fi

@@ -1,0 +1,5 @@
+#!/bin/bash
+pidof hyprlock || hyprlock &
+(while ! pidof hyprlock > /dev/null; do sleep 0.5; done \
+  && hyprctl dispatch dpms off \
+  && systemctl suspend) &

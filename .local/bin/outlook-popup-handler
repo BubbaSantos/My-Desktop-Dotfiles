@@ -1,0 +1,24 @@
+#!/bin/bash
+# Listen for new Chromium windows and float ones that look like Outlook popups
+
+handle() {
+    case $1 in
+        openwindow*)
+            addr="${1#openwindow>>}"
+            addr="${addr%%,*}"
+            sleep 0.3
+            title=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$addr\") | .title")
+            if [[ "$title" == *"Read Message"* || "$title" == *"Untitled - Chromium"* ]]; then
+                hyprctl dispatch setfloating address:0x$addr
+                hyprctl dispatch resizewindowpixel exact 1280 1200,address:0x$addr
+                hyprctl dispatch focuswindow address:0x$addr
+                sleep 0.1
+                hyprctl dispatch centerwindow
+            fi
+        ;;
+    esac
+}
+
+socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
+    handle "$line"
+done

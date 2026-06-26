@@ -151,4 +151,4 @@ fi
 hyprctl dispatch workspace 1
 
 # Send notification
-notify-send "Work Workflow" "All applications launched and organized" -t 3000
+notify-send -a "Work Workflow" "Work Workflow" "All applications launched and organized" -t 3000

@@ -2,7 +2,6 @@
 
 SCRIPT_DIRS=(
     "$HOME/.local/bin"
-    "$HOME/.config/hypr/scripts"
 )
 
 declare -A CONFIGS=(

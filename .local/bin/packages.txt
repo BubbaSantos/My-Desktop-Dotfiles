@@ -47,6 +47,7 @@ ddcutil-service
 dialog
 discord
 dmenu
+dms-shell
 dnsmasq
 docker
 docker-buildx
@@ -69,7 +70,6 @@ exfatprogs
 expac
 eza
 fastfetch
-fastjet
 fcitx5
 fcitx5-configtool
 fcitx5-gtk
@@ -83,6 +83,7 @@ fontconfig
 freecad
 freerdp
 fzf
+gcalcli
 ghostty
 gimp
 git
@@ -107,9 +108,11 @@ hyprland
 hyprland-guiutils
 hyprland-preview-share-picker
 hyprlock
+hyprmod
 hyprpicker
 hyprsunset
 imagemagick
+img2pdf
 impala
 imv
 inetutils
@@ -151,10 +154,12 @@ mako
 man-db
 mariadb-libs
 matugen
+micro
 microsoft-edge-stable-bin
 mise
 mpv
 nautilus
+nautilus-copy-path
 nautilus-python
 ncdu
 neovim
@@ -180,6 +185,7 @@ omarchy-walker
 openbsd-netcat
 opencode
 openrazer-meta-git
+openrgb
 openscad
 pamixer
 pavucontrol
@@ -198,12 +204,16 @@ power-profiles-daemon
 proton-vpn-gtk-app
 python-gobject
 python-pip
+python-pipx
 python-poetry-core
+python-recurring-ical-events
 python-terminaltexteffects
+qalculate-gtk
 qbittorrent
 qemu-full
 qt5-wayland
 qt6-wayland
+rclone
 remmina
 ripgrep
 rofi
@@ -227,6 +237,7 @@ swaybg
 swayosd
 swtpm
 sxiv
+syncthing
 system-config-printer
 teams-for-linux-bin
 tesseract
@@ -256,6 +267,7 @@ unzip
 usage
 uwsm
 uxplay
+vala
 vdirsyncer
 ventoy-bin
 virt-manager
@@ -264,6 +276,7 @@ voxtype-bin
 vscodium
 waybar
 wayland-utils
+wayle-bin
 wayvnc
 wev
 whois
@@ -278,12 +291,14 @@ xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
 xdg-terminal-exec
 xmlstarlet
+xorg-server-xvfb
 xorg-xdpyinfo
 xournalpp
 xpad
 yaru-icon-theme
 yay
 ydotool
+yelp-tools
 yq
 zen-browser-bin
 zoxide

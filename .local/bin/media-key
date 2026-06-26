@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -eu
+
+ACTION="${1:-}"
+APP_CLASS="chrome-music.youtube.com__-Profile_1"
+WS_NAME="ytmusic"
+
+case "$ACTION" in
+  prev)  KEY_ARGS=(-k j) ;;           # J  = previous in YouTube Music
+  pause) KEY_ARGS=(-k k) ;;           # K  = play/pause in YouTube Music
+  next)  KEY_ARGS=(-M shift -k n) ;;  # Shift+N = next track in YouTube Music
+  *) echo "Usage: media-key prev|pause|next" >&2; exit 2 ;;
+esac
+
+# Launch YTM if not running
+if ! hyprctl clients -j | jq -e ".[] | select(.class | test(\"${APP_CLASS}\"))" >/dev/null 2>&1; then
+  hyprctl dispatch exec "chromium --app=https://music.youtube.com --profile-directory='Profile 1'"
+  for i in $(seq 1 20); do
+    sleep 0.5
+    hyprctl clients -j | jq -e ".[] | select(.class | test(\"${APP_CLASS}\"))" >/dev/null 2>&1 && break
+  done
+fi
+
+YTM_ADDR=$(hyprctl clients -j | jq -r ".[] | select(.class | test(\"${APP_CLASS}\")) | .address" | head -1)
+[[ -z "$YTM_ADDR" ]] && exit 1
+
+# If YTM is in the special workspace and it's hidden, show it
+YTM_WS=$(hyprctl clients -j | jq -r ".[] | select(.address == \"${YTM_ADDR}\") | .workspace.name")
+if [[ "$YTM_WS" == special:* ]]; then
+  # Check if the special workspace is already visible on any monitor
+  VISIBLE=$(hyprctl monitors -j | jq -r ".[].specialWorkspace.name" | grep -F "$WS_NAME" || true)
+  if [[ -z "$VISIBLE" ]]; then
+    hyprctl dispatch togglespecialworkspace "$WS_NAME" 2>/dev/null || true
+  fi
+fi
+
+# Focus the YTM window and send the key
+hyprctl dispatch focuswindow "address:${YTM_ADDR}" 2>/dev/null || true
+sleep 0.15
+wtype "${KEY_ARGS[@]}"

@@ -60,7 +60,7 @@ show_hypr_menu() {
   *"My Config"*)       terminal bash -c "edit-hypr-config" ;;
   *Defaults*)          terminal bash -c "edit-hypr-defaults" ;;
   *"Float Size"*)      float-cycle-size.sh ;;
-  *"Workspace Follow"*) ~/.config/hypr/scripts/toggle-workspace-follow.sh ;;
+  *"Workspace Follow"*) ~/.local/bin/toggle-workspace-follow.sh ;;
   *"Brightness Down"*) BRIGHTNESS_STEP=10 ~/.local/bin/monitor-brightness down ;;
   *"Brightness Up"*)   BRIGHTNESS_STEP=10 ~/.local/bin/monitor-brightness up ;;
   *"Brightness Min"*)  ~/.local/bin/monitor-brightness min ;;
@@ -72,7 +72,7 @@ show_hypr_menu() {
 
 show_main_menu() {
   case $(menu "Mouse Menu" "  Midas Log\n  Workflow\n  Sync Desktop Dots\n 󰉋 Text\n 󰉋 Screenshot\n 󰉋 Hyprland") in
-  *"Midas Log"*) ~/.config/hypr/scripts/midas-log ;;
+  *"Midas Log"*) ~/.local/bin/midas-log ;;
   *Workflow*)    ~/.local/bin/workflow-work ;;
   *"Sync"*)      terminal bash -c "dotsync; read -p 'Press enter to close'" ;;
   *Text*)        show_text_menu ;;

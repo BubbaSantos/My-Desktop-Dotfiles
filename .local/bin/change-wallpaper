@@ -22,7 +22,7 @@ echo "================================"
 
 # Change wallpaper with swww
 echo "1. Setting wallpaper with swww..."
-swww img "$WALLPAPER" --transition-type fade --transition-duration 1
+awww img "$WALLPAPER" --transition-type fade --transition-duration 1
 
 # Check if --pick-colors flag is set
 if [ "$2" == "--pick-colors" ]; then

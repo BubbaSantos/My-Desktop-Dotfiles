@@ -5,7 +5,7 @@ if [ -n "$ADDRESS" ]; then
 else
     chromium --profile-directory="Profile 1" --app="https://www.notion.so/" \
         --hide-scrollbars \
-        --enable-features=WebAppWindowControlsOverlay \
+        --enable-features=UseOzonePlatform,WebAppWindowControlsOverlay,LinuxSystemURLHandler \
         --disable-features=WaylandWpColorManagerV1,WebContentsForceDark \
         --lang=en-GB \
         --ozone-platform=wayland &

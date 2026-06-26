@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+REPO="$HOME/repos/quickshell-config"
+cd "$REPO" || { echo "repo missing"; exit 1; }
+
+git add -A
+if ! git diff --cached --quiet; then
+    git commit -m "sync from $(hostname) $(date '+%F %H:%M')" >/dev/null \
+        || { echo "commit failed"; exit 1; }
+    local_changes=1
+else
+    local_changes=0
+fi
+
+if ! git pull --rebase --autostash 2>/dev/null; then
+    git rebase --abort 2>/dev/null
+    echo "conflict — resolve manually"
+    exit 1
+fi
+
+if [ -n "$(git log @{u}.. --oneline 2>/dev/null)" ] || [ "$local_changes" = "1" ]; then
+    git push 2>/dev/null || { echo "push failed"; exit 1; }
+    echo "synced ✓ ($(git log -1 --format=%h))"
+else
+    echo "up to date ($(git log -1 --format=%h))"
+fi

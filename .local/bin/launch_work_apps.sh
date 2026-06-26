@@ -5,10 +5,10 @@ hyprctl dispatch workspace 1
 sleep 0.5
 
 # Launch main apps
-~/.config/hypr/scripts/toggle-vivaldi.sh &
+~/.local/bin/toggle-vivaldi.sh &
 sleep 2  # give Vivaldi time to start
 
-~/.config/hypr/scripts/toggle-chatgpt.sh &
+~/.local/bin/toggle-chatgpt.sh &
 sleep 2  # wait for ChatGPT
 
 # Start grouping
@@ -16,23 +16,23 @@ ydotool key super+g
 sleep 0.5
 
 # Launch grouped apps
-~/.config/hypr/scripts/toggle-claude.sh &
+~/.local/bin/toggle-claude.sh &
 sleep 1
-~/.config/hypr/scripts/toggle-to-do.sh &
+~/.local/bin/toggle-to-do.sh &
 sleep 1
 
 # --- Workspace 2 ---
 hyprctl dispatch workspace 2
 sleep 0.5
-~/.config/hypr/scripts/toggle-outlook.sh &
+~/.local/bin/toggle-outlook.sh &
 sleep 2
-~/.config/hypr/scripts/toggle-chatgpt.sh &
+~/.local/bin/toggle-chatgpt.sh &
 sleep 2
 ydotool key super+g
 sleep 0.5
-~/.config/hypr/scripts/toggle-to-do.sh &
+~/.local/bin/toggle-to-do.sh &
 sleep 1
-~/.config/hypr/scripts/toggle-teams.sh &
+~/.local/bin/toggle-teams.sh &
 sleep 2
 
 # --- Workspace 3 ---
@@ -45,5 +45,5 @@ sleep 2
 # --- Workspace 6 ---
 hyprctl dispatch workspace 6
 sleep 0.5
-~/.config/hypr/scripts/toggle-notion.sh &
+~/.local/bin/toggle-notion.sh &
 sleep 2

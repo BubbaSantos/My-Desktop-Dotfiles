@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+"""Income Protection Calculator TUI"""
+
+from rich.console import Console
+from rich.panel import Panel
+from rich.prompt import FloatPrompt, Confirm
+from rich.table import Table
+
+console = Console()
+
+
+def get_annual_income():
+    """Prompt user for annual income"""
+    console.clear()
+    console.print(
+        Panel(
+            "[bold cyan]Income Protection Calculator[/bold cyan]",
+            expand=False,
+        )
+    )
+    console.print()
+    annual_income = FloatPrompt.ask(
+        "[bold]Enter client's annual income[/bold] (£)",
+        console=console,
+    )
+    return annual_income
+
+
+def calculate_coverage(annual_income, coverage_rate):
+    """Calculate monthly coverage amount"""
+    monthly_gross = annual_income / 12
+    monthly_coverage = monthly_gross * coverage_rate
+    return monthly_coverage
+
+
+def display_results(annual_income):
+    """Display both coverage options"""
+    console.clear()
+    console.print()
+
+    monthly_gross = annual_income / 12
+    coverage_60 = calculate_coverage(annual_income, 0.60)
+    coverage_65 = calculate_coverage(annual_income, 0.65)
+
+    result_table = Table(title="[bold cyan]Income Protection Coverage[/bold cyan]", show_header=True)
+    result_table.add_column("[bold]Provider Type[/bold]", style="cyan")
+    result_table.add_column("[bold]Coverage Rate[/bold]", style="yellow")
+    result_table.add_column("[bold]Monthly Coverage[/bold]", style="green")
+    
+    result_table.add_row("Royal London / Aviva", "65%", f"£{coverage_65:,.2f}")
+    result_table.add_row("All Other Providers", "60%", f"£{coverage_60:,.2f}")
+
+    console.print(result_table)
+    console.print()
+    console.print(f"[dim]Annual Income: £{annual_income:,.2f} | Monthly Gross: £{monthly_gross:,.2f}[/dim]")
+    console.print()
+
+
+def display_sick_pay_results(annual_income):
+    """Display comprehensive sick pay calculations"""
+    console.clear()
+    console.print()
+    
+    monthly_gross = annual_income / 12
+    monthly_half_pay = monthly_gross / 2
+    coverage_60 = monthly_gross * 0.60
+    coverage_65 = monthly_gross * 0.65
+    
+    topup_60 = max(0, coverage_60 - monthly_half_pay)
+    topup_65 = max(0, coverage_65 - monthly_half_pay)
+    
+    # Summary box
+    summary_table = Table(title="[bold cyan]Sick Pay Summary[/bold cyan]", show_header=False, border_style="blue")
+    summary_table.add_row("[bold]Annual Income[/bold]", f"£{annual_income:,.2f}")
+    summary_table.add_row("[bold]Monthly Gross[/bold]", f"£{monthly_gross:,.2f}")
+    summary_table.add_row("[bold]Monthly Half Pay[/bold]", f"£{monthly_half_pay:,.2f}")
+    
+    console.print(summary_table)
+    console.print()
+    
+    # Coverage options table
+    options_table = Table(title="[bold cyan]Coverage Options[/bold cyan]", show_header=True)
+    options_table.add_column("[bold]Coverage Type[/bold]", style="cyan")
+    options_table.add_column("[bold]Target Amount[/bold]", style="yellow")
+    options_table.add_column("[bold]Top-Up Needed[/bold]", style="green")
+    
+    options_table.add_row("60% Coverage", f"£{coverage_60:,.2f}", f"£{topup_60:,.2f}")
+    options_table.add_row("65% Coverage", f"£{coverage_65:,.2f}", f"£{topup_65:,.2f}")
+    
+    console.print(options_table)
+    console.print()
+    
+    # Ask if they want to check a custom amount
+    if Confirm.ask("[bold]Check custom amount?[/bold]", default=True):
+        custom_amount = FloatPrompt.ask(
+            "[bold]Enter desired monthly benefit amount[/bold] (£)",
+            console=console,
+        )
+        topup_custom = max(0, custom_amount - monthly_half_pay)
+        
+        console.clear()
+        console.print()
+        
+        custom_table = Table(title="[bold cyan]Custom Amount Calculation[/bold cyan]", show_header=False, border_style="green")
+        custom_table.add_row("[bold]Target Amount[/bold]", f"£{custom_amount:,.2f}")
+        custom_table.add_row("[bold]Monthly Half Pay[/bold]", f"£{monthly_half_pay:,.2f}")
+        custom_table.add_row()
+        custom_table.add_row(
+            "[bold green]Monthly Top-Up Needed[/bold green]",
+            f"[bold yellow]£{topup_custom:,.2f}[/bold yellow]"
+        )
+        custom_table.add_row("[dim]During half pay period[/dim]", "")
+        
+        console.print(custom_table)
+        console.print()
+
+
+def main():
+    """Main application loop"""
+    while True:
+        try:
+            annual_income = get_annual_income()
+
+            if annual_income < 0:
+                console.print("[red]Income must be positive[/red]")
+                continue
+
+            display_results(annual_income)
+
+            # Ask if they want to add sick pay calculations - default to yes
+            if Confirm.ask("[bold]Add sick pay scheme calculations?[/bold]", default=True):
+                display_sick_pay_results(annual_income)
+
+            if not Confirm.ask("[bold]Calculate another?[/bold]"):
+                console.print("[cyan]Thanks for using Income Protection Calculator![/cyan]")
+                break
+
+        except (ValueError, KeyboardInterrupt):
+            console.print("[red]Invalid input or cancelled[/red]")
+            if not Confirm.ask("[bold]Try again?[/bold]"):
+                console.print("[cyan]Goodbye![/cyan]")
+                break
+
+
+if __name__ == "__main__":
+    main()

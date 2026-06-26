@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Force Num Lock on every time this key is pressed
+numlockx on >/dev/null 2>&1
+# Check if calculator is running
+if hyprctl clients | grep -q "qalculate-gtk"; then
+    # Check if calculator is focused
+    if hyprctl activewindow -j | jq -e '.class=="qalculate-gtk"' > /dev/null 2>&1; then
+        # Calculator is focused, close it
+        hyprctl dispatch closewindow class:^qalculate-gtk$
+    else
+        # Calculator exists but not focused, focus it
+        hyprctl dispatch focuswindow class:^qalculate-gtk$
+    fi
+else
+    # Calculator not running, launch it
+    qalculate-gtk &
+    sleep 0.3
+    hyprctl dispatch focuswindow class:^qalculate-gtk$
+fi

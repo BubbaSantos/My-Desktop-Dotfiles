@@ -11,6 +11,7 @@ exec 9>"$LOCK"
 flock -n 9 || exit 0
 
 notify() {
+  [[ "${BRIGHTNESS_NOTIFY:-1}" == "0" ]] && return
   notify-send \
     -a "Brightness" \
     -i "$ICON" \
