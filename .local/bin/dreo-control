@@ -1,0 +1,116 @@
+#!/home/bubba/repos/dreo-control/venv/bin/python3
+"""
+dreo-control: CLI wrapper for Dreo Air Circulator fan control.
+
+Usage:
+  dreo-control status          # prints JSON: {"on":bool,"speed":int,"osc":bool}
+  dreo-control on
+  dreo-control off
+  dreo-control toggle          # reads current state from API, then flips it
+  dreo-control speed <1-4>
+  dreo-control osc <on|off>
+
+Device: 1572127056357535746-34adb4a1783b179c:001:0000000000s  (client.devices[0])
+Region: EU  (must be passed capitalised to PyDreo constructor)
+"""
+
+import sys
+import time
+import json
+from pydreo import PyDreo
+
+USERNAME = "seanmaclean@hotmail.co.uk"
+PASSWORD = "WArdB(gus)1967::"
+REGION   = "EU"
+
+# How long to wait after start_transport() before the websocket is ready.
+TRANSPORT_SETTLE = 1.5   # seconds
+
+# How long to wait after sending a command before stopping transport.
+# The websocket must flush the command before the process exits.
+COMMAND_FLUSH = 1.2   # seconds
+
+
+def get_client():
+    client = PyDreo(USERNAME, PASSWORD, region=REGION)
+    client.login()
+    client.load_devices()
+    return client
+
+
+def main():
+    cmd = sys.argv[1] if len(sys.argv) > 1 else None
+    if cmd is None:
+        print(__doc__, file=sys.stderr)
+        sys.exit(1)
+
+    client = get_client()
+
+    if not client.devices:
+        print(json.dumps({"error": "no devices found"}), flush=True)
+        sys.exit(1)
+
+    fan = client.devices[0]
+
+    # ── status: REST-only — no websocket, much faster ─────────────────────────
+    if cmd == "status":
+        try:
+            out = {
+                "on":    bool(fan.is_on),
+                "speed": int(fan.fan_speed) if fan.fan_speed is not None else 0,
+                "osc":   bool(fan.oscillating),
+            }
+        except Exception as e:
+            print(json.dumps({"error": str(e)}), flush=True)
+            sys.exit(1)
+        print(json.dumps(out), flush=True)
+        return
+
+    # ── Control commands: open websocket, send command, flush, close ──────────
+    client.start_transport()
+    time.sleep(TRANSPORT_SETTLE)
+
+    try:
+        if cmd == "on":
+            fan.is_on = True
+
+        elif cmd == "off":
+            fan.is_on = False
+
+        elif cmd == "toggle":
+            # Read current state from load_devices() REST response, then flip.
+            # pydreo's property setters are no-ops when the value matches the
+            # locally-cached state, so we must set the *opposite* of what the
+            # REST call returned — not blindly set True/False.
+            current = bool(fan.is_on)
+            fan.is_on = not current
+
+        elif cmd == "speed":
+            if len(sys.argv) < 3:
+                print("Usage: dreo-control speed <1-4>", file=sys.stderr)
+                client.stop_transport()
+                sys.exit(1)
+            fan.fan_speed = max(1, min(4, int(sys.argv[2])))
+
+        elif cmd == "osc":
+            if len(sys.argv) < 3:
+                print("Usage: dreo-control osc <on|off>", file=sys.stderr)
+                client.stop_transport()
+                sys.exit(1)
+            fan.oscillating = sys.argv[2].lower() == "on"
+
+        else:
+            print(f"Unknown command: {cmd!r}", file=sys.stderr)
+            client.stop_transport()
+            sys.exit(1)
+
+    except Exception as e:
+        print(f"Command error: {e}", file=sys.stderr)
+        client.stop_transport()
+        sys.exit(1)
+
+    time.sleep(COMMAND_FLUSH)
+    client.stop_transport()
+
+
+main()

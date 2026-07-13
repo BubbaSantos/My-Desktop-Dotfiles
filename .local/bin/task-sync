@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+"""
+Syncs tasks between Supabase (Task app) and ~/Sync/quickshell/timepieces.json
+(QuickShell bar). Runs bidirectionally:
+  - Supabase → timepieces: new/updated remote tasks
+  - timepieces → Supabase: completions made locally in the bar
+"""
+
+import json, os, sys, urllib.request, urllib.parse, urllib.error
+from pathlib import Path
+from datetime import datetime, timezone
+
+CONF = Path.home() / ".config" / "task-sync.conf"
+TIMEPIECES = Path.home() / "Sync" / "quickshell" / "timepieces.json"
+
+# ── Load config ───────────────────────────────────────────────────────────────
+def load_conf():
+    conf = {}
+    if not CONF.exists():
+        return conf
+    for line in CONF.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, _, v = line.partition("=")
+            conf[k.strip()] = v.strip()
+    return conf
+
+# ── Supabase REST helpers ─────────────────────────────────────────────────────
+def supabase_get(url, anon_key, path, params=""):
+    full = f"{url}/rest/v1/{path}{'?' + params if params else ''}"
+    req = urllib.request.Request(full, headers={
+        "apikey": anon_key,
+        "Authorization": f"Bearer {anon_key}",
+    })
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return json.loads(r.read())
+
+def supabase_patch(url, anon_key, path, params, body):
+    full = f"{url}/rest/v1/{path}?{params}"
+    data = json.dumps(body).encode()
+    req = urllib.request.Request(full, data=data, method="PATCH", headers={
+        "apikey": anon_key,
+        "Authorization": f"Bearer {anon_key}",
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal",
+    })
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return r.status
+
+# ── Timepieces helpers ────────────────────────────────────────────────────────
+def read_timepieces():
+    if not TIMEPIECES.exists():
+        return {}
+    try:
+        return json.loads(TIMEPIECES.read_text())
+    except Exception:
+        return {}
+
+def write_timepieces(data):
+    TIMEPIECES.parent.mkdir(parents=True, exist_ok=True)
+    tmp = TIMEPIECES.with_suffix(".tmp")
+    tmp.write_text(json.dumps(data, indent=2))
+    tmp.rename(TIMEPIECES)
+
+# ── Field mapping ─────────────────────────────────────────────────────────────
+def supabase_to_qs(task, existing=None):
+    """Convert a Supabase task row to a timepieces todo entry."""
+    cat = task.get("category_id", "")
+    # Capitalise simple word IDs (work, personal, etc.); leave UUIDs as-is
+    if cat and len(cat) < 20:
+        cat = cat.capitalize()
+
+    entry = {
+        "id": task["id"],
+        "text": task["title"],
+        "done": task.get("completed", False),
+        "category": cat,
+        "dueDate": task.get("due_date") or "",
+        "priority": existing.get("priority", 0) if existing else 0,
+        "order": existing.get("order", 0) if existing else 0,
+        "createdAt": task.get("created_at", datetime.now(timezone.utc).isoformat()),
+        "notes": task.get("notes", ""),
+        "tags": task.get("tags", []),
+    }
+    return entry
+
+# ── Main sync ─────────────────────────────────────────────────────────────────
+def main():
+    conf = load_conf()
+    code = conf.get("TASK_CODE", "").strip()
+    sup_url = conf.get("SUPABASE_URL", "").strip().rstrip("/")
+    anon_key = conf.get("SUPABASE_ANON_KEY", "").strip()
+
+    if not code or not sup_url or not anon_key:
+        print("task-sync: config incomplete — fill in ~/.config/task-sync.conf", file=sys.stderr)
+        sys.exit(1)
+
+    # Fetch remote tasks
+    try:
+        remote_tasks = supabase_get(sup_url, anon_key, "todo_tasks",
+                                    f"task_code=eq.{code}&select=*&order=created_at.asc")
+    except Exception as e:
+        print(f"task-sync: fetch failed — {e}", file=sys.stderr)
+        sys.exit(1)
+
+    remote_by_id = {t["id"]: t for t in remote_tasks}
+
+    # Read current timepieces
+    data = read_timepieces()
+    current_todos = data.get("todos", [])
+    current_by_id = {t["id"]: t for t in current_todos}
+
+    # Push local completions that haven't reached Supabase yet
+    for todo in current_todos:
+        tid = todo.get("id")
+        if not tid or tid not in remote_by_id:
+            continue
+        if todo.get("done") and not remote_by_id[tid].get("completed"):
+            try:
+                supabase_patch(sup_url, anon_key, "todo_tasks",
+                               f"id=eq.{tid}", {"completed": True})
+                remote_by_id[tid]["completed"] = True
+            except Exception as e:
+                print(f"task-sync: push completion {tid} failed — {e}", file=sys.stderr)
+
+    # Build merged todos list: Supabase tasks first, then local-only entries
+    merged = []
+    for task in remote_tasks:
+        existing = current_by_id.get(task["id"])
+        entry = supabase_to_qs(task, existing)
+        # Preserve local done=true even if remote hasn't caught up yet
+        if existing and existing.get("done") and not task.get("completed"):
+            entry["done"] = True
+        merged.append(entry)
+
+    # Keep any todos that exist only locally (not in Supabase)
+    supabase_ids = set(remote_by_id.keys())
+    for todo in current_todos:
+        if todo.get("id") not in supabase_ids:
+            merged.append(todo)
+
+    data["todos"] = merged
+    write_timepieces(data)
+    print(f"task-sync: ok — {len(merged)} tasks")
+
+if __name__ == "__main__":
+    main()

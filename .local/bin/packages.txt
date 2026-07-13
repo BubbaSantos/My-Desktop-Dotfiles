@@ -158,6 +158,7 @@ micro
 microsoft-edge-stable-bin
 mise
 mpv
+mullvad-vpn
 nautilus
 nautilus-copy-path
 nautilus-python

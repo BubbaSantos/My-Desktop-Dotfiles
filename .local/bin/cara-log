@@ -35,12 +35,7 @@ wtype -k Tab
 sleep 0.1
 wtype -k Tab
 sleep 0.1
-wtype -k Tab
-sleep 0.1
-wtype -k Tab
-sleep 0.1
-wtype -k Tab
-sleep 0.1
+
 
 # Press Enter to copy
 wtype -k Return
@@ -62,3 +57,4 @@ sleep 0.1
 hyprctl dispatch focuswindow "class:com.belmoussaoui.Authenticator"
 sleep 0.05
 hyprctl dispatch killactive
+
