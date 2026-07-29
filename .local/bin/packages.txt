@@ -5,6 +5,9 @@ alsa-scarlett-gui
 asdcontrol
 atuin
 authenticator
+avr-binutils
+avr-gcc
+avrdude
 awww
 base
 base-devel
@@ -98,6 +101,7 @@ gpu-screen-recorder
 grim
 gst-plugin-pipewire
 gum
+gvfs-afc
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
@@ -111,6 +115,7 @@ hyprlock
 hyprmod
 hyprpicker
 hyprsunset
+ifuse
 imagemagick
 img2pdf
 impala
@@ -148,6 +153,7 @@ linux-firmware
 linux-headers
 llvm
 localsend
+loupe
 love
 luarocks
 mako
@@ -166,7 +172,6 @@ ncdu
 neovim
 nerd-dictation-git
 networkmanager
-noctalia-shell
 noisetorch
 noto-fonts
 noto-fonts-cjk
@@ -212,6 +217,7 @@ python-terminaltexteffects
 qalculate-gtk
 qbittorrent
 qemu-full
+qmk
 qt5-wayland
 qt6-wayland
 rclone
@@ -266,6 +272,7 @@ ufw
 ufw-docker
 unzip
 usage
+usbmuxd
 uwsm
 uxplay
 vala

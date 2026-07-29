@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+CLASS="date-duration"
+
+if hyprctl clients -j | jq -e --arg c "$CLASS" '.[] | select(.class==$c)' > /dev/null 2>&1; then
+    if hyprctl activewindow -j | jq -e --arg c "$CLASS" '.class==$c' > /dev/null 2>&1; then
+        hyprctl dispatch closewindow "class:^${CLASS}$"
+    else
+        hyprctl dispatch focuswindow "class:^${CLASS}$"
+    fi
+else
+    alacritty --class "$CLASS" --option font.size=10 -e ~/.local/bin/date-duration &
+fi

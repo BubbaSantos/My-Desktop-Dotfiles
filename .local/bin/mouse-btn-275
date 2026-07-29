@@ -8,7 +8,7 @@ hyprctl dispatch focuswindow address:$ADDRESS
 sleep 0.1
 
 case "$CLASS" in
-    "chrome-outlook.office.com__-Profile_1")
+    "chrome-outlook.cloud.microsoft__-Profile_1")
         wtype -M ctrl -M shift -k 1 -m ctrl -m shift
         ;;
     *)

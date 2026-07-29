@@ -8,6 +8,8 @@ Usage:
   dreo-control off
   dreo-control toggle          # reads current state from API, then flips it
   dreo-control speed <1-4>
+  dreo-control speed-up        # increment speed by 1 (max 4)
+  dreo-control speed-down      # decrement speed by 1 (min 1)
   dreo-control osc <on|off>
 
 Device: 1572127056357535746-34adb4a1783b179c:001:0000000000s  (client.devices[0])
@@ -91,6 +93,14 @@ def main():
                 client.stop_transport()
                 sys.exit(1)
             fan.fan_speed = max(1, min(4, int(sys.argv[2])))
+
+        elif cmd == "speed-up":
+            current = int(fan.fan_speed) if fan.fan_speed is not None else 1
+            fan.fan_speed = min(4, current + 1)
+
+        elif cmd == "speed-down":
+            current = int(fan.fan_speed) if fan.fan_speed is not None else 1
+            fan.fan_speed = max(1, current - 1)
 
         elif cmd == "osc":
             if len(sys.argv) < 3:

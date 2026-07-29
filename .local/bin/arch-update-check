@@ -1,0 +1,56 @@
+#!/bin/bash
+# arch-update-check.sh — checks Arch Linux news for manual intervention before updating
+
+set -euo pipefail
+
+NEWS_URL="https://archlinux.org/feeds/news/"
+DAYS_BACK=30
+
+echo "Checking Arch Linux news for the last $DAYS_BACK days..."
+echo
+
+feed=$(curl -s "$NEWS_URL")
+
+if [[ -z "$feed" ]]; then
+    echo "Could not fetch Arch news feed. Check your connection."
+    exit 1
+fi
+
+titles=$(echo "$feed" | grep -oP '(?<=<title>)[^<]+' | tail -n +2)
+links=$(echo "$feed" | grep -oP '(?<=<link>)[^<]+' | tail -n +2)
+dates=$(echo "$feed" | grep -oP '(?<=<pubDate>)[^<]+')
+
+mapfile -t title_arr <<< "$titles"
+mapfile -t link_arr <<< "$links"
+mapfile -t date_arr <<< "$dates"
+
+cutoff=$(date -d "-$DAYS_BACK days" +%s)
+found_recent=0
+
+for i in "${!title_arr[@]}"; do
+    entry_date="${date_arr[$i]:-}"
+    [[ -z "$entry_date" ]] && continue
+    entry_epoch=$(date -d "$entry_date" +%s 2>/dev/null || echo 0)
+
+    if (( entry_epoch >= cutoff )); then
+        found_recent=1
+        echo "⚠ ${title_arr[$i]}"
+        echo "  ${link_arr[$i]}"
+        echo "  ($entry_date)"
+        echo
+    fi
+done
+
+if [[ $found_recent -eq 0 ]]; then
+    echo "No news in the last $DAYS_BACK days. Looks clear."
+fi
+
+echo
+read -rp "Proceed with system update? [y/N] " confirm
+
+if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    echo "Running update..."
+    paru -Syu --ignore=omarchy
+else
+    echo "Update cancelled."
+fi

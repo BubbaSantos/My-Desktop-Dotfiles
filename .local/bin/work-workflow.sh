@@ -82,8 +82,8 @@ fi
 
 # ========== WORKSPACE 2: Outlook + AI Tools + Teams Chat (grouped) ==========
 hyprctl dispatch workspace 2
-uwsm app -- chromium --new-window --ozone-platform=wayland --app="https://outlook.office.com/mail" --user-data-dir="$HOME/.config/chromium-profile1" &
-wait_for_window "chrome-outlook.office.com"
+uwsm app -- chromium --new-window --ozone-platform=wayland --app="https://outlook.cloud.microsoft/mail" --user-data-dir="$HOME/.config/chromium-profile1" &
+wait_for_window "chrome-outlook.cloud.microsoft"
 OUTLOOK_ADDR=$(get_window_address "outlook")
 sleep 0.5
 
