@@ -163,6 +163,7 @@ matugen
 micro
 microsoft-edge-stable-bin
 mise
+motion
 mpv
 mullvad-vpn
 nautilus
@@ -185,6 +186,7 @@ nvidia-settings
 nvidia-utils
 nwg-displays
 obs-studio
+okular
 omarchy-keyring
 omarchy-nvim
 omarchy-walker
@@ -288,6 +290,8 @@ wayle-bin
 wayvnc
 wev
 whois
+wine
+wine-mono
 wireless-regdb
 wiremix
 wireplumber

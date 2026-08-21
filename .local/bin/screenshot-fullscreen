@@ -1,5 +1,7 @@
 #!/bin/bash
+qs ipc -c "QuickShell Bar" call screenshot begin
 FILE=~/Pictures/Screenshots/fullscreen-$(date +%s).png
 grim -o $(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name') - | tee "$FILE" | wl-copy
-ACTION=$(notify-send -a "Screenshot" -A "default=Open in satty" "Fullscreen saved + copied" "$FILE" --wait)
+qs ipc -c "QuickShell Bar" call screenshot end
+ACTION=$(notify-send -a "Screenshot" -A "default=Open in satty" "Fullscreen" "$FILE" --wait)
 [ "$ACTION" = "default" ] && satty -f "$FILE"

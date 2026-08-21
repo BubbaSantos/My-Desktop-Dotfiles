@@ -1,4 +1,6 @@
 #!/bin/bash
+trap 'qs ipc -c "QuickShell Bar" call screenshot end' EXIT
+qs ipc -c "QuickShell Bar" call screenshot begin
 GEOM=$(slurp)
 [ -z "$GEOM" ] && exit 1
 RX=$(echo "$GEOM" | awk '{print $1}' | cut -d, -f1)
@@ -13,5 +15,7 @@ TITLE=$(hyprctl clients -j | jq -r --argjson rx "$RX" --argjson ry "$RY" '
 TITLE=${TITLE:-region}
 FILE=~/Pictures/Screenshots/region-${TITLE}-$(date +%s).png
 grim -g "$GEOM" - | tee "$FILE" | wl-copy
-ACTION=$(notify-send -a "Screenshot" -A "default=Open in satty" "Region saved + copied" "$FILE" --wait)
+trap - EXIT
+qs ipc -c "QuickShell Bar" call screenshot end
+ACTION=$(notify-send -a "Screenshot" -A "default=Open in satty" "Region" "$FILE" --wait)
 [ "$ACTION" = "default" ] && satty -f "$FILE"
