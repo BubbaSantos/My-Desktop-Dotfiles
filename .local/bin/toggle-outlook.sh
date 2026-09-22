@@ -3,7 +3,7 @@ ADDRESS=$(hyprctl clients -j | jq -r '.[] | select(.class | contains("outlook.cl
 if [ -n "$ADDRESS" ]; then
     hyprctl dispatch focuswindow "address:$ADDRESS"
 else
-    chromium --profile-directory="Profile 1" --app="https://outlook.cloud.microsoft" \
+    chromium --profile-directory="Profile 2" --app="https://outlook.cloud.microsoft" \
         --hide-scrollbars \
         --enable-features=UseOzonePlatform,WebAppWindowControlsOverlay,LinuxSystemURLHandler \
         --disable-features=WaylandWpColorManagerV1,WebContentsForceDark \

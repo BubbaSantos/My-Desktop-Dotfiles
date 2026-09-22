@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Opens clipse to pick an item, which copies it to the clipboard (clipse's
+# own autoPaste is left disabled — see ~/.config/clipse/config.json — since
+# it kills whatever launched it as soon as it starts, which meant a wrapper
+# script here could never detect completion). Paste it afterward with
+# Super+V / Ctrl+backtick, same as any other copy.
+HIST_FILE="$HOME/.config/clipse/clipboard_history.json"
+before_hash=$(wl-paste 2>/dev/null | sha1sum)
+before_mtime=$(stat -c %Y "$HIST_FILE" 2>/dev/null)
+
+alacritty --class clipse -e clipse
+
+after_hash=$(wl-paste 2>/dev/null | sha1sum)
+after_mtime=$(stat -c %Y "$HIST_FILE" 2>/dev/null)
+
+if [ "$before_hash" != "$after_hash" ] || [ "$before_mtime" != "$after_mtime" ]; then
+    qs ipc -c "QuickShell Bar" call clipboard showCopied
+fi

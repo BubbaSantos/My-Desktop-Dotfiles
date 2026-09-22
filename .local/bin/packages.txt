@@ -27,6 +27,7 @@ btrfs-progs
 calibre
 caligula
 cava
+cbonsai
 chatgpt-bin
 cheese
 chromium
@@ -107,6 +108,7 @@ gvfs-nfs
 gvfs-smb
 handy-bin
 highlight-pointer
+hollywood
 hypridle
 hyprland
 hyprland-guiutils
@@ -195,6 +197,7 @@ opencode
 openrazer-meta-git
 openrgb
 openscad
+otf-space-grotesk
 pamixer
 pavucontrol
 pinta
@@ -272,6 +275,7 @@ typora
 tzupdate
 ufw
 ufw-docker
+unimatrix-git
 unzip
 usage
 usbmuxd

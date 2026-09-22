@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# KEY_LEFTMETA = 125 in linux/input-event-codes.h
+echo "$(date +%T.%N) $1" >> /tmp/mouse-super-debug.log
+case "$1" in
+  press)
+    ydotool key 125:1
+    ;;
+  release)
+    ydotool key 125:0
+    ;;
+esac

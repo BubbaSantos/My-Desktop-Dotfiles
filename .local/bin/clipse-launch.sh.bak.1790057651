@@ -1,0 +1,19 @@
+#!/bin/bash
+# clipse's own autoPaste (enabled in ~/.config/clipse/config.json) already
+# restores focus to the previous window and sends the paste itself once you
+# pick an item. A trailing `hyprctl dispatch sendshortcut ctrl,v` here was
+# redundant and, worse, clipse detects and kills that kind of wrapping
+# process on its next launch (see clipse.log: "Killing pid ..., cmd
+# .../clipse-launch.sh") — which meant this script never reached its own
+# trailing commands. kitty's single-instance/remote-control mode was also
+# suspected of not blocking reliably here, so this now launches via
+# alacritty instead, which blocks until the window truly closes.
+HIST_FILE="$HOME/.config/clipse/clipboard_history.json"
+before=$(stat -c %Y "$HIST_FILE" 2>/dev/null)
+
+alacritty --class clipse -e clipse
+
+after=$(stat -c %Y "$HIST_FILE" 2>/dev/null)
+if [ -n "$after" ] && [ "$before" != "$after" ]; then
+    qs ipc -c "QuickShell Bar" call clipboard showPasted
+fi
