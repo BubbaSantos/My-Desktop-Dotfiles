@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Render the sharp source.png into current.png at the saved blur level, then make OBS reload it.
+set -euo pipefail
+DIR="$HOME/.local/share/obs-bg"
+level=$(cat "$DIR/blur-level" 2>/dev/null || echo 0)
+if (( level > 0 )); then
+  ffmpeg -y -loglevel error -i "$DIR/source.png" -vf "gblur=sigma=$level:steps=3" -frames:v 1 "$DIR/current.png"
+else
+  cp "$DIR/source.png" "$DIR/current.png"
+fi
+obs-set-image Image "$DIR/current.png"

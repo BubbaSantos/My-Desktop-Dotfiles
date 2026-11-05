@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR="$HOME/Pictures/obs-backgrounds"
+SOURCE="$HOME/.local/share/obs-bg/source.png"
+CURRENT="$HOME/.local/share/obs-bg/current.png"
+SCENE="Webcam"
+CAM="Video Capture Device (V4L2)"
+IMG="Image"
+
+# Pull the obs-cmd command (with password) from the Hyprland secrets file
+line=$(sed -n 's/^\$obs = //p' "$HOME/.config/hypr/secrets.conf")
+[[ -n "$line" ]] || { notify-send "OBS background" "Couldn't read secrets.conf"; exit 1; }
+read -ra OBS <<< "$line"
+
+mkdir -p "$DIR" "$(dirname "$CURRENT")"
+
+choice=$(yad --file --add-preview --large-preview \
+  --title="Choose OBS background" --width=1000 --height=700 \
+  --filename="$DIR/" \
+  --file-filter="Images | *.png *.jpg *.jpeg *.webp *.PNG *.JPG *.JPEG") || exit 0
+
+[[ -f "$choice" && "$choice" != "$CURRENT" && "$choice" != "$SOURCE" ]] || exit 0
+ffmpeg -y -loglevel error -i "$choice" -frames:v 1 "$SOURCE"
+
+"${OBS[@]}" filter disable "$CAM" "Background Removal"
+"${OBS[@]}" filter enable "$CAM" "Replace"
+# Render at the saved blur level and have OBS reload it (obs-cmd input settings is a no-op)
+obs-bg-render
+"${OBS[@]}" scene-item enable "$SCENE" "$IMG"
+
+notify-send "OBS background" "$(basename "$choice")"

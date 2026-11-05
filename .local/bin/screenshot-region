@@ -3,14 +3,17 @@ trap 'qs ipc -c "QuickShell Bar" call screenshot end' EXIT
 qs ipc -c "QuickShell Bar" call screenshot begin
 GEOM=$(slurp)
 [ -z "$GEOM" ] && exit 1
-RX=$(echo "$GEOM" | awk '{print $1}' | cut -d, -f1)
-RY=$(echo "$GEOM" | awk '{print $1}' | cut -d, -f2)
-TITLE=$(hyprctl clients -j | jq -r --argjson rx "$RX" --argjson ry "$RY" '
+# slurp prints "X,Y WxH"; match on the region's centre against windows that are actually
+# on screen (mapped, on a monitor's active workspace), floating first, then most recently focused
+read -r CX CY < <(echo "$GEOM" | awk '{split($1,p,","); split($2,s,"x"); print int(p[1]+s[1]/2), int(p[2]+s[2]/2)}')
+TITLE=$(hyprctl clients -j | jq -r --argjson cx "$CX" --argjson cy "$CY" \
+  --argjson ws "$(hyprctl monitors -j | jq '[.[].activeWorkspace.id]')" '
   [.[] | select(
-    .at[0] <= $rx and .at[1] <= $ry and
-    (.at[0] + .size[0]) >= $rx and
-    (.at[1] + .size[1]) >= $ry
-  )] | first | .title // "region"
+    .mapped and (.hidden | not) and (.workspace.id as $w | $ws | index($w)) and
+    .at[0] <= $cx and .at[1] <= $cy and
+    (.at[0] + .size[0]) >= $cx and
+    (.at[1] + .size[1]) >= $cy
+  )] | sort_by([(if .floating then 0 else 1 end), .focusHistoryID]) | first | .title // "region"
 ' | tr -s " " "_" | tr -cd "[:alnum:]_-")
 TITLE=${TITLE:-region}
 FILE=~/Pictures/Screenshots/region-${TITLE}-$(date +%s).png

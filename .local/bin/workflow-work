@@ -14,6 +14,8 @@ hyprctl dispatch togglegroup
 sleep $SLEEP
 chromium --app="https://claude.ai/new" &
 sleep $LAUNCH_SLEEP
+chromium --app="https://to-do.office.com/tasks/inbox" &
+sleep $LAUNCH_SLEEP
 hyprctl dispatch lockactivegroup lock
 sleep $SLEEP
 
@@ -27,6 +29,8 @@ sleep $GROUP_SLEEP
 hyprctl dispatch togglegroup
 sleep $SLEEP
 chromium --app="https://claude.ai/new" &
+sleep $LAUNCH_SLEEP
+chromium --app="https://to-do.office.com/tasks/inbox" &
 sleep $LAUNCH_SLEEP
 hyprctl dispatch lockactivegroup lock
 sleep $SLEEP
@@ -47,25 +51,8 @@ if [ -n "$ADDRESS" ]; then
     hyprctl dispatch movetoworkspacesilent "3,address:$ADDRESS"
 fi
 
-# --- Workspace 11: Notion (launched last so polling is uninterrupted) ---
-hyprctl dispatch workspace 11
-sleep $SLEEP
-~/.local/bin/toggle-notion.sh &
-
-echo "Waiting for Notion window..."
-for i in $(seq 1 20); do
-    NOTION_ADDR=$(hyprctl clients -j | jq -r '.[] | select(.class | startswith("chrome-") and contains("notion.so")) | .address' | head -1)
-    if [ -n "$NOTION_ADDR" ]; then
-        hyprctl dispatch movetoworkspacesilent "11,address:$NOTION_ADDR"
-        echo "Notion moved to workspace 11"
-        break
-    fi
-    sleep 0.5
-done
-
-if [ -z "$NOTION_ADDR" ]; then
-    notify-send "Work Workflow" "⚠ Notion window not found" -t 4000
-fi
+# --- Notion: launched hidden into the left-edge dock (special:notion) ---
+~/.local/bin/toggle-notion.sh --launch &
 
 # Return to workspace 1 when done
 hyprctl dispatch workspace 1

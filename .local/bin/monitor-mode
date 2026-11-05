@@ -1,0 +1,53 @@
+#!/bin/bash
+# Switch between single- and dual-monitor Hyprland configs.
+# Usage: monitor-mode [single|dual|toggle|status]
+
+set -euo pipefail
+
+HYPR_DIR="$HOME/.config/hypr"
+MONITORS_LINK="$HYPR_DIR/monitors.conf"
+WORKSPACES_LINK="$HYPR_DIR/workspaces.conf"
+
+current_mode() {
+    local target
+    target=$(readlink -f "$MONITORS_LINK" 2>/dev/null || echo "")
+    if [[ "$target" == *monitors-single.conf ]]; then
+        echo "single"
+    elif [[ "$target" == *monitors-dual.conf ]]; then
+        echo "dual"
+    else
+        echo "unknown"
+    fi
+}
+
+apply_mode() {
+    local mode="$1"
+    ln -sf "$HYPR_DIR/monitors-$mode.conf" "$MONITORS_LINK"
+    ln -sf "$HYPR_DIR/workspaces-$mode.conf" "$WORKSPACES_LINK"
+    hyprctl reload
+    notify-send "Monitor Mode" "Switched to $mode-monitor setup" -t 3000
+    echo "Switched to $mode-monitor setup"
+}
+
+MODE="${1:-toggle}"
+
+case "$MODE" in
+    single|dual)
+        apply_mode "$MODE"
+        ;;
+    toggle)
+        current="$(current_mode)"
+        if [[ "$current" == "single" ]]; then
+            apply_mode "dual"
+        else
+            apply_mode "single"
+        fi
+        ;;
+    status)
+        echo "Current mode: $(current_mode)"
+        ;;
+    *)
+        echo "Usage: monitor-mode [single|dual|toggle|status]" >&2
+        exit 1
+        ;;
+esac

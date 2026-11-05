@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""Usage: obs-blur <+N|-N>  — adjust blur: the Background Removal filter in blur mode, else the background image."""
+import asyncio, base64, hashlib, json, os, re, subprocess, sys
+import websockets
+
+SOURCE, FILTER = "Video Capture Device (V4L2)", "Background Removal"
+LO, HI = 1, 30
+IMG_HI = 40  # max gblur sigma for the background image
+delta = int(sys.argv[1])
+line = open(os.path.expanduser("~/.config/hypr/secrets.conf")).read()
+host, password = re.search(r"obsws://([^/\s]+)/(\S+)", line).groups()
+
+def b64sha(s): return base64.b64encode(hashlib.sha256(s.encode()).digest()).decode()
+
+async def request(ws, rtype, data):
+    await ws.send(json.dumps({"op": 6, "d": {"requestType": rtype, "requestId": rtype, "requestData": data}}))
+    d = json.loads(await ws.recv())["d"]
+    if not d["requestStatus"]["result"]:
+        sys.exit(f"OBS error: {d['requestStatus']}")
+    return d.get("responseData", {})
+
+async def main():
+    async with websockets.connect(f"ws://{host}") as ws:
+        hello = json.loads(await ws.recv())
+        ident = {"rpcVersion": 1}
+        auth = hello["d"].get("authentication")
+        if auth:
+            ident["authentication"] = b64sha(b64sha(password + auth["salt"]) + auth["challenge"])
+        await ws.send(json.dumps({"op": 1, "d": ident}))
+        await ws.recv()
+        f = await request(ws, "GetSourceFilter", {"sourceName": SOURCE, "filterName": FILTER})
+        if f["filterEnabled"]:
+            cur = f["filterSettings"]
+            new = max(LO, min(HI, int(cur.get("blur_background", 0)) + delta))
+            await request(ws, "SetSourceFilterSettings", {"sourceName": SOURCE, "filterName": FILTER,
+                          "filterSettings": {"blur_background": new}, "overlay": True})
+        else:
+            path = os.path.expanduser("~/.local/share/obs-bg/blur-level")
+            new = max(0, min(IMG_HI, int(open(path).read() or 0) + delta))
+            open(path, "w").write(str(new))
+            subprocess.run([os.path.expanduser("~/.local/bin/obs-bg-render")], check=True)
+        print(new)
+
+asyncio.run(main())

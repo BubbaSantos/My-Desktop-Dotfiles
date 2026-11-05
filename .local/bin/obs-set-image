@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""Usage: obs-set-image <input-name> <file-path>  — set an OBS image source's file via websocket."""
+import asyncio, base64, hashlib, json, re, sys, os
+import websockets
+
+name, path = sys.argv[1], sys.argv[2]
+line = open(os.path.expanduser("~/.config/hypr/secrets.conf")).read()
+m = re.search(r"obsws://([^/\s]+)/(\S+)", line)
+host, password = m.group(1), m.group(2)
+
+def b64sha(s): return base64.b64encode(hashlib.sha256(s.encode()).digest()).decode()
+
+async def main():
+    async with websockets.connect(f"ws://{host}") as ws:
+        hello = json.loads(await ws.recv())
+        ident = {"rpcVersion": 1}
+        auth = hello["d"].get("authentication")
+        if auth:
+            secret = b64sha(password + auth["salt"])
+            ident["authentication"] = b64sha(secret + auth["challenge"])
+        await ws.send(json.dumps({"op": 1, "d": ident}))
+        await ws.recv()
+        await ws.send(json.dumps({"op": 6, "d": {
+            "requestType": "SetInputSettings", "requestId": "1",
+            "requestData": {"inputName": name, "inputSettings": {"file": path, "unload": True}, "overlay": True}}}))
+        res = json.loads(await ws.recv())["d"]["requestStatus"]
+        if not res["result"]:
+            sys.exit(f"OBS error: {res}")
+
+asyncio.run(main())

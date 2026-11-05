@@ -1,4 +1,26 @@
 #!/usr/bin/env bash
+# Wait until the physical trigger modifiers (Super/Shift/Ctrl/Alt) are released, otherwise
+# the synthetic keystrokes below combine with them and fire Hyprland binds (workspace
+# moves, app shortcuts) instead of acting on the text.
+wait_for_mod_release() {
+  local devs=() d
+  for d in /dev/input/by-path/*-event-kbd /dev/input/by-id/*-event-kbd; do
+    [[ -e "$d" ]] && devs+=("$d")
+  done
+  for _ in $(seq 100); do
+    local held=0
+    for d in "${devs[@]}"; do
+      for k in KEY_LEFTMETA KEY_RIGHTMETA KEY_LEFTSHIFT KEY_RIGHTSHIFT KEY_LEFTCTRL KEY_RIGHTCTRL KEY_LEFTALT KEY_RIGHTALT KEY_SLASH; do
+        evtest --query "$d" EV_KEY "$k" 2>/dev/null
+        [[ $? -eq 10 ]] && held=1 && break 2
+      done
+    done
+    (( held )) || return 0
+    sleep 0.05
+  done
+}
+wait_for_mod_release
+
 PREV=$(hyprctl activewindow -j | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['address'])")
 hyprctl dispatch focuswindow address:$PREV
 sleep 0.2

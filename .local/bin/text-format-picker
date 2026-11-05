@@ -2,6 +2,7 @@
 # text-format-picker — format highlighted text via fzf TUI
 # Grab the previously focused window address before we steal focus
 PREV_WINDOW="$1"
+IN_WIDGET="$2"   # "true" when the text came from a QuickShell widget
 # Small delay to let clipboard settle
 sleep 0.1
 # Try primary selection first, fall back to regular clipboard
@@ -135,6 +136,12 @@ RESULT=$(transform "$CHOICE" "$INPUT")
 # Copy to clipboard
 echo -n "$RESULT" | wl-copy
 echo -n "$RESULT" | wl-copy --primary
+if [[ "$IN_WIDGET" == "true" ]]; then
+  # Put the result back into the widget field (replacing its selection)
+  qs ipc -c "QuickShell Bar" call popups resumeGrab true
+  notify-send "Format Picker" "$(echo "$RESULT" | head -c 80)" -t 2000
+  exit 0
+fi
 # Refocus the previous window, then paste
 hyprctl dispatch focuswindow address:$PREV_WINDOW
 sleep 0.3

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Logs connection drops to the router (gw) and the internet (net) to ~/netdrops.log.
+# Run as a systemd user service (scripts/netwatch.service); the QuickShell
+# "NetWatch" bar module reads the log and can start/stop the service.
+
+TARGET=1.1.1.1
+LOG=~/netdrops.log
+
+declare -A host=([net]="$TARGET")
+# "init" until the first successful ping: a network that isn't up yet at boot
+# (or when the service starts) isn't a drop, so nothing is logged for it.
+declare -A state=([gw]=init [net]=init)
+declare -A since
+
+log() { echo "$(date '+%F %T') $*" | tee -a "$LOG"; }
+
+# Mark suspend/resume in the log so the bar module can tell a drop caused by
+# sleeping apart from a real one (logind's PrepareForSleep: true = going to sleep).
+dbus-monitor --system "type='signal',interface='org.freedesktop.login1.Manager',member='PrepareForSleep'" 2>/dev/null |
+  while read -r line; do
+    case $line in
+      *"boolean true"*)  log "system sleep" ;;
+      *"boolean false"*) log "system wake" ;;
+    esac
+  done &
+WATCHER=$!
+
+trap 'kill $WATCHER 2>/dev/null; pkill -P $WATCHER 2>/dev/null; log "netwatch stopped"; exit 0' TERM INT
+
+log "netwatch started (net=$TARGET)"
+
+while true; do
+  # Re-detect the gateway every pass so a late-starting or changed network is handled.
+  host[gw]=$(ip route | awk '/default/ {print $3; exit}')
+  for name in gw net; do
+    h=${host[$name]}
+    if [[ -n $h ]] && ping -c1 -W1 "$h" &>/dev/null; then
+      if [[ ${state[$name]} == down ]]; then
+        dur=$(( $(date +%s) - since[$name] ))
+        log "$name ($h) UP after ${dur}s"
+      fi
+      state[$name]=up
+    else
+      if [[ ${state[$name]} == up ]]; then
+        log "$name (${h:-no route}) DOWN"
+        state[$name]=down
+        since[$name]=$(date +%s)
+      fi
+    fi
+  done
+  sleep 1 &
+  wait $!
+done

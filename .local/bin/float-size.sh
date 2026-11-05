@@ -4,11 +4,31 @@ set -eu
 WIN_JSON="$(hyprctl activewindow -j)"
 CLASS="$(printf "%s" "$WIN_JSON" | jq -r '.class')"
 
+# A pseudotiled window leaves pseudo mode before it is floated
+has_pseudo() { printf "%s" "$WIN_JSON" | jq -e '.tags | index("pseudo")' >/dev/null; }
+if [ "$(printf "%s" "$WIN_JSON" | jq -r '.floating')" != true ] && has_pseudo; then
+  hyprctl dispatch pseudo
+  hyprctl dispatch tagwindow "pseudo address:$(printf "%s" "$WIN_JSON" | jq -r .address)"
+fi
+
+# A floating window going back to tiled must not come back pseudotiled
+if [ "$(printf "%s" "$WIN_JSON" | jq -r '.floating')" = true ] && [ "$CLASS" != teams-for-linux ]; then
+  hyprctl dispatch togglefloating
+  if has_pseudo; then
+    hyprctl dispatch pseudo
+    hyprctl dispatch tagwindow "pseudo address:$(printf "%s" "$WIN_JSON" | jq -r .address)"
+  fi
+  exit 0
+fi
+
 # Toggle floating first, except for teams-for-linux which is managed separately
 case "$CLASS" in
   teams-for-linux) ;;
   *) hyprctl dispatch togglefloating ;;
 esac
+
+SINGLE=0
+[ "$(~/.local/bin/monitor-mode status)" = "Current mode: single" ] && SINGLE=1
 
 # Helper: centre the active window on its current monitor using monitor geometry
 center_on_current_monitor() {
@@ -59,7 +79,7 @@ case "$CLASS" in
     else
       hyprctl dispatch togglefloating
       hyprctl dispatch resizeactive exact 527 392
-      hyprctl dispatch moveactive exact 3250 550
+      if [ "$SINGLE" = 1 ]; then ~/.local/bin/float-fit.sh center; else hyprctl dispatch moveactive exact 3250 550; fi
     fi
     ;;
   vivaldi-stable)
@@ -72,10 +92,13 @@ case "$CLASS" in
     ;;
   chrome-www.twitch.tv__-Default)
     hyprctl dispatch resizeactive exact 1498 1332
-    hyprctl dispatch moveactive exact 2760 531
+    if [ "$SINGLE" = 1 ]; then center_on_current_monitor; else hyprctl dispatch moveactive exact 2760 531; fi
     ;;
   *)
     hyprctl dispatch resizeactive exact 1696 1360
     center_on_current_monitor
     ;;
 esac
+
+# Safety net: never leave the window off-screen or larger than the monitor
+[ "$CLASS" = teams-for-linux ] || ~/.local/bin/float-fit.sh

@@ -14,7 +14,7 @@ if hyprctl clients | grep -q "org.gnome.Calculator"; then
     fi
 else
     # Calculator not running, launch it
-    gnome-calculator &
+    /usr/bin/gnome-calculator &
     sleep 0.3
     hyprctl dispatch focuswindow class:^org.gnome.Calculator$
 fi

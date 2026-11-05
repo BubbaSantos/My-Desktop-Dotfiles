@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Notify when a download finishes, labelled with the web app it came from
+
+DIR="$(xdg-user-dir DOWNLOAD 2>/dev/null || echo "$HOME/Downloads")"
+APPS_DIR="$HOME/.local/share/applications"
+
+# hyprctl needs the instance signature; normally imported by uwsm, else find it
+if [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
+  HYPRLAND_INSTANCE_SIGNATURE=$(command ls -t "${XDG_RUNTIME_DIR:-/run/user/$UID}/hypr" 2>/dev/null | head -n1)
+  export HYPRLAND_INSTANCE_SIGNATURE
+fi
+
+# Print the Name= of the web app .desktop whose Exec line contains $1.
+# If several match (Outlook vs Outlook Calendar) take the shortest URL.
+desktop_name_for() {
+  local needle="$1" f exec url best="" bestlen=999999
+  for f in "$APPS_DIR"/*.desktop; do
+    exec=$(grep -m1 '^Exec=' "$f" 2>/dev/null) || continue
+    [[ "$exec" == *"$needle"* ]] || continue
+    url=$(grep -o -m1 "[^ ]*$needle[^ ]*" <<<"$exec" | head -n1)
+    if (( ${#url} < bestlen )); then best="$f"; bestlen=${#url}; fi
+  done
+  [[ -n "$best" ]] && grep -m1 '^Name=' "$best" | cut -d= -f2-
+}
+
+app_name_for() {
+  local win class domain base name
+
+  win=$(hyprctl activewindow -j 2>/dev/null)
+  class=$(jq -r '.class // empty' <<<"$win" 2>/dev/null)
+
+  # Web app classes look like chrome-outlook.office.com__-Profile_1
+  if [[ "$class" == chrome-*__* ]]; then
+    domain=${class#chrome-}
+    domain=${domain%%__*}
+    domain=${domain#www.}
+    # e.g. outlook.office.com -> office.com, for looser matching
+    base=$(awk -F. '{ if (NF>=2) print $(NF-1)"."$NF; else print $0 }' <<<"$domain")
+
+    name=$(desktop_name_for "$domain")
+    [[ -z "$name" ]] && name=$(desktop_name_for "$base")
+    echo "${name:-$domain}"
+    return
+  fi
+
+  # Not a web app (e.g. Vivaldi, which notifies on its own): stay quiet
+  return 1
+}
+
+inotifywait -m -q -e moved_to --format '%f' "$DIR" | while read -r file; do
+  case "$file" in
+    *.crdownload|*.part|*.tmp|.*) continue ;;
+  esac
+
+  (
+    # Resolve the label now, while the downloading window is still focused
+    app=$(app_name_for) || exit 0
+    action=$(notify-send -a "$app" -i folder-download \
+      -A "open=Open" -A "folder=Show folder" \
+      "Download complete" "$file")
+    case "$action" in
+      open)   xdg-open "$DIR/$file" ;;
+      folder) xdg-open "$DIR" ;;
+    esac
+  ) &
+done

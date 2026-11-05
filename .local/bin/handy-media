@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# handy-media: toggle Handy recording, pausing media while recording
+# usage: handy-media [toggle|post|reset]
+
+STATE="${XDG_RUNTIME_DIR:-/tmp}/handy-media.players"
+STALE=600   # seconds; older state is assumed to be a missed stop
+
+mode="${1:-toggle}"
+
+trigger() {
+    if [[ "$mode" == "post" ]]; then
+        handy --toggle-post-process
+    else
+        pkill -USR2 -x handy
+    fi
+}
+
+# Serialise runs: a quick second press must wait for the first to finish
+# pausing/resuming, otherwise it sees half-written state and resumes (or
+# fails to pause) the wrong players.
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/handy-media.lock"
+flock -w 5 9 || exit 0
+
+if [[ "$mode" == "reset" ]]; then
+    rm -f "$STATE"
+    exit 0
+fi
+
+# Drop leftover state from a missed stop
+if [[ -f "$STATE" ]] && (( $(date +%s) - $(stat -c %Y "$STATE") > STALE )); then
+    rm -f "$STATE"
+fi
+
+# Something is playing while we think a recording is in progress: the stop
+# was missed (e.g. Handy stopped another way), so treat this press as a start.
+if [[ -f "$STATE" ]]; then
+    while IFS= read -r p; do
+        [[ "$p" == playerctld ]] && continue
+        if [[ "$(playerctl -p "$p" status 2>/dev/null)" == Playing ]]; then
+            rm -f "$STATE"
+            break
+        fi
+    done < <(playerctl -l 2>/dev/null)
+fi
+
+if [[ ! -f "$STATE" ]]; then
+    # START: pause whatever is playing, remember it, start recording
+    : > "$STATE"
+    while IFS= read -r p; do
+        [[ "$p" == playerctld ]] && continue
+        [[ "$(playerctl -p "$p" status 2>/dev/null)" == Playing ]] || continue
+        printf '%s\n' "$p" >> "$STATE"
+        playerctl -p "$p" pause 2>/dev/null
+    done < <(playerctl -l 2>/dev/null)
+    trigger
+else
+    # STOP: stop recording, then resume only what we paused
+    trigger
+    sleep 0.3
+    while IFS= read -r p; do
+        # Only resume what is still paused (not something the user since
+        # stopped, or already restarted themselves).
+        [[ -n "$p" && "$(playerctl -p "$p" status 2>/dev/null)" == Paused ]] && playerctl -p "$p" play 2>/dev/null
+    done < "$STATE"
+    rm -f "$STATE"
+fi

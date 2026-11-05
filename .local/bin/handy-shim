@@ -1,0 +1,4 @@
+#!/bin/bash
+export HANDY_NO_GTK_LAYER_SHELL=1
+# export LD_PRELOAD="$HOME/.local/lib/libhandy-keep-dmabuf.so"
+exec /usr/bin/handy "$@"

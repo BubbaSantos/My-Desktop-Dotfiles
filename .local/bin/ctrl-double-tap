@@ -1,0 +1,23 @@
+#!/bin/bash
+# Double-tap Ctrl -> toggle the QuickShell cursor spotlight.
+# Hyprland calls this with "down" on Ctrl press and "up" on release.
+# A "tap" is a press shorter than TAP_MS; two taps within GAP_MS toggle.
+# Settings come from ~/.local/state/spotlight-trigger.conf (written by QuickShell).
+ENABLED=1 TAP_MS=250 GAP_MS=450
+[ -r ~/.local/state/spotlight-trigger.conf ] && . ~/.local/state/spotlight-trigger.conf
+[ "$ENABLED" = 1 ] || exit 0
+d="${XDG_RUNTIME_DIR:-/tmp}/ctrl-double-tap"
+now=$(date +%s%3N)
+case "$1" in
+  down) echo "$now" > "$d.down" ;;
+  up)
+    down=$(cat "$d.down" 2>/dev/null || echo 0)
+    (( now - down > TAP_MS )) && { rm -f "$d.last"; exit 0; }
+    last=$(cat "$d.last" 2>/dev/null || echo 0)
+    if (( now - last < GAP_MS )); then
+      rm -f "$d.last"
+      qs ipc -c "QuickShell Bar" call spotlight toggle
+    else
+      echo "$now" > "$d.last"
+    fi ;;
+esac

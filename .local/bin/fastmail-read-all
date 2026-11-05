@@ -1,0 +1,17 @@
+#!/bin/bash
+# Fastmail: select all → mark read → unselect all
+# Only runs if the focused window is Fastmail
+
+win=$(hyprctl activewindow -j | jq -r '"\(.class) \(.title)"')
+[[ "${win,,}" == *fastmail* ]] || exit 0
+
+sleep 0.3          # let you release the keybind's modifiers
+wtype "'" a        # select all
+sleep 0.15
+wtype . r          # mark read
+sleep 4
+wtype "'" n        # unselect all
+sleep 0.05
+wtype -k Home      # jump to top of list
+sleep 0.05
+wtype -k Home      # jump to top of list

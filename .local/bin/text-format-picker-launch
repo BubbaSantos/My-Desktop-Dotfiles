@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 PREV=$(hyprctl activewindow -j | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['address'])")
-alacritty --class format-picker --option "font.size=10" -e ~/.local/bin/text-format-picker "$PREV"
+# If a QuickShell widget has the keyboard, release it so the picker can take focus; the
+# picker pastes the result back into that widget (see text-format-picker).
+IN_WIDGET=$(qs ipc -c "QuickShell Bar" call popups suspendGrab 2>/dev/null)
+alacritty --class format-picker --option "font.size=10" -e ~/.local/bin/text-format-picker "$PREV" "$IN_WIDGET"
+# Cancelled / no selection: just hand the keyboard back (no-op if already resumed).
+[ "$IN_WIDGET" = "true" ] && qs ipc -c "QuickShell Bar" call popups resumeGrab false
+exit 0

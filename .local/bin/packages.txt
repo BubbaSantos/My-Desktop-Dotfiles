@@ -2,6 +2,7 @@ adobe-source-code-pro-fonts
 aether
 alacritty
 alsa-scarlett-gui
+android-tools
 asdcontrol
 atuin
 authenticator
@@ -40,6 +41,7 @@ clipse
 cmake
 cmatrix
 cuda
+cudnn-frontend
 cups
 cups-browsed
 cups-filters
@@ -59,7 +61,6 @@ docker-compose
 dotnet-runtime-9.0
 dotool
 downgrade
-dropbox
 dust
 edk2-ovmf
 efibootmgr
@@ -83,6 +84,7 @@ fd
 ffmpegthumbnailer
 firefox
 firefoxpwa
+flatpak
 fontconfig
 freecad
 freerdp
@@ -106,7 +108,7 @@ gvfs-afc
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
-handy-bin
+handy
 highlight-pointer
 hollywood
 hypridle
@@ -117,6 +119,7 @@ hyprlock
 hyprmod
 hyprpicker
 hyprsunset
+icon-library
 ifuse
 imagemagick
 img2pdf
@@ -174,7 +177,6 @@ nautilus-python
 ncdu
 neovim
 nerd-dictation-git
-networkmanager
 noisetorch
 noto-fonts
 noto-fonts-cjk
@@ -187,11 +189,16 @@ nvidia-open-dkms
 nvidia-settings
 nvidia-utils
 nwg-displays
+oath-toolkit
+obs-backgroundremoval
+obs-cmd
 obs-studio
 okular
+ollama-cuda
 omarchy-keyring
 omarchy-nvim
 omarchy-walker
+onnxruntime-cuda
 openbsd-netcat
 opencode
 openrazer-meta-git
@@ -199,6 +206,7 @@ openrgb
 openscad
 otf-space-grotesk
 pamixer
+pandoc-cli
 pavucontrol
 pinta
 piper
@@ -273,6 +281,7 @@ ttf-symbola
 tty-clock
 typora
 tzupdate
+udiskie
 ufw
 ufw-docker
 unimatrix-git
@@ -281,17 +290,18 @@ usage
 usbmuxd
 uwsm
 uxplay
+v4l2loopback-dkms
 vala
 vdirsyncer
 ventoy-bin
 virt-manager
 vivaldi
-voxtype-bin
 vscodium
 waybar
 wayland-utils
 wayle-bin
 wayvnc
+webkitgtk-6.0
 wev
 whois
 wine
@@ -311,6 +321,7 @@ xorg-server-xvfb
 xorg-xdpyinfo
 xournalpp
 xpad
+yad
 yaru-icon-theme
 yay
 ydotool

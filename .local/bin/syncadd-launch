@@ -1,0 +1,7 @@
+#!/bin/bash
+# Focus the Snippet & XCompose Manager if it's open, otherwise launch it.
+if hyprctl clients -j | grep -q '"class": "syncadd"'; then
+    hyprctl dispatch focuswindow class:syncadd
+else
+    exec syncadd
+fi
